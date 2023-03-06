@@ -65,6 +65,22 @@ RSpec.describe Sheetah::Messaging::Message do
     expect(message).not_to eq(other_message)
   end
 
+  describe "#to_h" do
+    it "returns the attributes as a hash" do
+      attrs = {
+        code: double,
+        code_data: double,
+        scope: double,
+        scope_data: double,
+        severity: double,
+      }
+
+      message = described_class.new(**attrs)
+
+      expect(message.to_h).to eq(attrs)
+    end
+  end
+
   describe "#to_s" do
     let(:code)       { "foo_is_bar" }
     let(:code_data)  { nil }
