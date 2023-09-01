@@ -11,7 +11,7 @@ RSpec.describe Sheetah::Messaging::Messages::MissingColumn do
     let(:message) do
       described_class.new(
         code: "missing_column",
-        code_data: "header_foo",
+        code_data: { value: "header_foo" },
         scope: "SHEET",
         scope_data: nil
       )
