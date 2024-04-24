@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.homepage = "https://github.com/tabulard/tabulard"
   spec.summary  = "Process tabular data from different sources with a rich, unified API"
 
-  spec.required_ruby_version = ">= 2.7.0"
+  spec.required_ruby_version = ">= 3.0"
 
   spec.metadata["source_code_uri"]   = "https://github.com/tabulard/tabulard"
   spec.metadata["bug_tracker_uri"]   = "https://github.com/tabulard/tabulard/issues"
