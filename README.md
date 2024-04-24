@@ -7,5 +7,5 @@ fine-grain error management.
 The following resources document the latest valid state of the `master`
 branch:
 
-- [Ruby API](https://steeple-org.github.io/sheetah/ruby)
-- [Coverage](https://steeple-org.github.io/sheetah/coverage)
+- [Ruby API](https://tabulard.github.io/tabulard/ruby)
+- [Coverage](https://tabulard.github.io/tabulard/coverage)

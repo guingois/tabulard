@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    sheetah (0.1.0)
+    tabulard (0.1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -86,8 +86,8 @@ DEPENDENCIES
   rubocop (~> 1.56)
   rubocop-performance (~> 1.19)
   rubocop-rspec (~> 2.23)
-  sheetah!
   simplecov (~> 0.22.0)
+  tabulard!
   yard (~> 0.9.34)
 
 BUNDLED WITH
