@@ -33,9 +33,9 @@ module Sheetah
           next false unless args.empty?
 
           case opts
-          in { io: _, **nil } | \
-             { io: _, encoding: String | Encoding, **nil } | \
-             { path: /\.csv$/i, **nil } | \
+          in { io: _, **nil } |
+             { io: _, encoding: String | Encoding, **nil } |
+             { path: /\.csv$/i, **nil } |
              { path: /\.csv$/i, encoding: String | Encoding, **nil }
           then
             true

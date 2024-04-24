@@ -47,6 +47,9 @@ RSpec/IndexedLet:
 RSpec/MessageSpies:
   Enabled: false
 
+RSpec/MetadataStyle:
+  EnforcedStyle: hash
+
 RSpec/MultipleExpectations:
   Max: 5
 
