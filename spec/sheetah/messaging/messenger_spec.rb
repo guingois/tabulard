@@ -144,8 +144,8 @@ RSpec.describe Sheetah::Messaging::Messenger do
       result
     end
 
-    def stub_scoping!(receiver, *args, &block)
-      allow_method_call_checking_block(receiver, :scoping!, *args, &block)
+    def stub_scoping!(receiver, ...)
+      allow_method_call_checking_block(receiver, :scoping!, ...)
     end
 
     describe "#scoping" do
@@ -236,8 +236,8 @@ RSpec.describe Sheetah::Messaging::Messenger do
     end
 
     describe "#scope_row" do
-      def stub_scope_row!(receiver, *args, &block)
-        allow_method_call_checking_block(receiver, :scope_row!, *args, &block)
+      def stub_scope_row!(receiver, ...)
+        allow_method_call_checking_block(receiver, :scope_row!, ...)
       end
 
       let(:messenger) { described_class.new }
@@ -324,8 +324,8 @@ RSpec.describe Sheetah::Messaging::Messenger do
     end
 
     describe "#scope_col" do
-      def stub_scope_col!(receiver, *args, &block)
-        allow_method_call_checking_block(receiver, :scope_col!, *args, &block)
+      def stub_scope_col!(receiver, ...)
+        allow_method_call_checking_block(receiver, :scope_col!, ...)
       end
 
       let(:messenger) { described_class.new }
