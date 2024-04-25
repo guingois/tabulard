@@ -400,4 +400,44 @@ RSpec.describe Sheetah::Messaging::Messenger do
       end
     end
   end
+
+  describe "validating messages" do
+    let(:message) do
+      Sheetah::Messaging::Message.new(code: double)
+    end
+
+    it "implicitly depends on a global config" do
+      config = instance_double(Sheetah::Messaging::Config, validate_messages: double)
+      allow(Sheetah::Messaging).to receive(:config).and_return(config)
+      messenger = described_class.new
+      expect(messenger.validate_messages).to eq(config.validate_messages)
+    end
+
+    it "is passed to a duplicate" do
+      messenger = described_class.new(validate_messages: val = double)
+      expect(messenger.dup.validate_messages).to eq(val)
+    end
+
+    context "when enabled" do
+      let(:messenger) do
+        described_class.new(validate_messages: true)
+      end
+
+      it "validates a message while adding it" do
+        expect(message).to receive(:validate).with(no_args)
+        messenger.warn(message)
+      end
+    end
+
+    context "when disabled" do
+      let(:messenger) do
+        described_class.new(validate_messages: false)
+      end
+
+      it "validates a message while adding it" do
+        expect(message).not_to receive(:validate)
+        messenger.warn(message)
+      end
+    end
+  end
 end

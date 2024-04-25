@@ -7,6 +7,11 @@ module Sheetah
     module Messages
       class MustBeArray < Message
         CODE = "must_be_array"
+
+        def_validator do
+          cell
+          nil_code_data
+        end
       end
     end
   end

@@ -20,7 +20,7 @@ RSpec.describe Sheetah::Messaging::Message do
   end
 
   it "needs at least a code" do
-    expect { described_class.new }.to raise_error(ArgumentError, /missing keyword: :code/i)
+    expect { described_class.new }.to raise_error(ArgumentError, /missing keyword: :code/)
   end
 
   it "may have only a custom code and some defaults attributes" do
@@ -63,6 +63,10 @@ RSpec.describe Sheetah::Messaging::Message do
       severity: severity
     )
     expect(message).not_to eq(other_message)
+  end
+
+  it "may be validated" do
+    expect(message).to be_a(Sheetah::Messaging::Validations)
   end
 
   describe "#to_h" do

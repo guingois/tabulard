@@ -7,6 +7,14 @@ module Sheetah
     module Messages
       class DuplicatedHeader < Message
         CODE = "duplicated_header"
+
+        def_validator do
+          col
+
+          def validate_code_data(message)
+            message.code_data.is_a?(String)
+          end
+        end
       end
     end
   end

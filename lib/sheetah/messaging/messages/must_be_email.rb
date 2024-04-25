@@ -7,6 +7,14 @@ module Sheetah
     module Messages
       class MustBeEmail < Message
         CODE = "must_be_email"
+
+        def_validator do
+          cell
+
+          def validate_code_data(message)
+            message.code_data in { value: String }
+          end
+        end
       end
     end
   end

@@ -7,26 +7,30 @@ module Sheetah
     class Messenger
       def initialize(
         scope: SCOPES::SHEET,
-        scope_data: nil
+        scope_data: nil,
+        validate_messages: Messaging.config.validate_messages
       )
         @scope = scope.freeze
         @scope_data = scope_data.freeze
         @messages = []
+        @validate_messages = validate_messages
       end
 
-      attr_reader :scope, :scope_data, :messages
+      attr_reader :scope, :scope_data, :messages, :validate_messages
 
       def ==(other)
         other.is_a?(self.class) &&
-          scope      == other.scope &&
+          scope == other.scope &&
           scope_data == other.scope_data &&
-          messages   == other.messages
+          messages == other.messages &&
+          validate_messages == other.validate_messages
       end
 
       def dup
         self.class.new(
           scope: @scope,
-          scope_data: @scope_data
+          scope_data: @scope_data,
+          validate_messages: @validate_messages
         )
       end
 
@@ -95,6 +99,8 @@ module Sheetah
         message.scope = @scope
         message.scope_data = @scope_data
         message.severity = severity
+
+        message.validate if @validate_messages
 
         messages << message
 

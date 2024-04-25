@@ -1,10 +1,13 @@
 # frozen_string_literal: true
 
 require_relative "constants"
+require_relative "validations"
 
 module Sheetah
   module Messaging
     class Message
+      include Validations
+
       def self.code
         self::CODE if defined?(self::CODE)
       end
