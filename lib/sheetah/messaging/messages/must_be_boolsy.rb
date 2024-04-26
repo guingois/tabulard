@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require_relative "../message"
+require_relative "../message_variant"
 
 module Sheetah
   module Messaging
     module Messages
-      class MustBeBoolsy < Message
+      class MustBeBoolsy < MessageVariant
         CODE = "must_be_boolsy"
 
         def_validator do

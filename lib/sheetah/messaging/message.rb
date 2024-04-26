@@ -8,14 +8,6 @@ module Sheetah
     class Message
       include Validations
 
-      def self.code
-        self::CODE if defined?(self::CODE)
-      end
-
-      def self.new(**opts)
-        code ? super(code: code, **opts) : super
-      end
-
       def initialize(
         code:,
         code_data: nil,

@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require_relative "../message"
+require_relative "../message_variant"
 
 module Sheetah
   module Messaging
     module Messages
-      class InvalidHeader < Message
+      class InvalidHeader < MessageVariant
         CODE = "invalid_header"
 
         def_validator do

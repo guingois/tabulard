@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require_relative "../message"
+require_relative "../message_variant"
 
 module Sheetah
   module Messaging
     module Messages
-      class MissingColumn < Message
+      class MissingColumn < MessageVariant
         CODE = "missing_column"
 
         def_validator do

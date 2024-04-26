@@ -37,19 +37,19 @@ RSpec.describe Sheetah::Messaging::Validations do
   end
 
   context "when a validator is defined" do
-    it "provides a kind of CodeClassMessageValidator" do
+    it "provides a kind of BaseValidator" do
       message_class.def_validator
-      expect(message_class.validator).to be_a(described_class::CodeClassMessageValidator)
-    end
-
-    it "may provide a different kind of validator" do
-      message_class.def_validator(base: described_class::BaseValidator)
       expect(message_class.validator).to be_a(described_class::BaseValidator)
     end
 
+    it "may provide a different kind of validator" do
+      message_class.def_validator(base: validator_class = Class.new)
+      expect(message_class.validator).to be_a(validator_class)
+    end
+
     it "validates" do
-      message_class.def_validator
-      message = message_class.new(code: "bar")
+      message_class.def_validator { sheet }
+      message = message_class.new(scope: "bar")
       expect { message_class.validate(message) }.to raise_error(described_class::InvalidMessage)
     end
 
@@ -73,8 +73,8 @@ RSpec.describe Sheetah::Messaging::Validations do
         end
 
         it "may inherit from another validator class" do
-          message_subclass.def_validator(base: described_class::BaseValidator)
-          expect(message_subclass.validator).to be_a(described_class::BaseValidator)
+          message_subclass.def_validator(base: validator_class = Class.new)
+          expect(message_subclass.validator).to be_a(validator_class)
         end
       end
     end

@@ -110,14 +110,8 @@ module Sheetah
         end
       end
 
-      class CodeClassMessageValidator < BaseValidator
-        def validate_code(message)
-          message.code == message.class.code
-        end
-      end
-
       module ClassMethods
-        def def_validator(base: validator&.class || CodeClassMessageValidator, &block)
+        def def_validator(base: validator&.class || BaseValidator, &block)
           @validator = Class.new(base, &block).new.freeze
         end
 
