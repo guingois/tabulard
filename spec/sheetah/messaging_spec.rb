@@ -23,11 +23,12 @@ RSpec.describe Sheetah::Messaging do
   end
 
   describe "::configure" do
-    let(:old) { instance_double(described_class::Config, dup: new) }
-    let(:new) { instance_double(described_class::Config) }
+    let(:old) { described_class::Config.new }
+    let(:new) { described_class::Config.new }
 
     before do
       described_class.config = old
+      allow(old).to receive(:dup).and_return(new)
     end
 
     it "modifies a copy of the global instance" do
