@@ -11,7 +11,7 @@ RSpec.describe Sheetah::Messaging::Messages::InvalidHeader do
     let(:message) do
       described_class.new(
         code: "invalid_header",
-        code_data: "header_foo",
+        code_data: { value: "header_foo" },
         scope: "COL",
         scope_data: { col: "FOO" }
       )

@@ -12,7 +12,7 @@ module Sheetah
           sheet
 
           def validate_code_data(message)
-            message.code_data.is_a?(String)
+            message.code_data in { value: String }
           end
         end
       end
