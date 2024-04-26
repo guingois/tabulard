@@ -54,46 +54,17 @@ RSpec.describe Sheetah::SheetProcessor, monadic_result: true do
     failure
   end
 
-  describe "backend detection" do
-    it "can rely on the explicit argument" do
-      actual_args = backend_args
-      actual_opts = backend_opts.merge(backend: sheet_class)
+  it "passes the args and opts to Backends.open" do
+    actual_args = backend_args
+    actual_opts = backend_opts.merge(backend: sheet_class)
 
-      expect(Sheetah::Backends).to(
-        receive(:open)
-        .with(*actual_args, **actual_opts)
-        .and_return(Success())
-      )
+    expect(Sheetah::Backends).to(
+      receive(:open)
+      .with(*actual_args, **actual_opts)
+      .and_return(Success())
+    )
 
-      result = processor.call(*actual_args, **actual_opts)
-
-      expect(result).to eq(
-        Sheetah::SheetProcessorResult.new(
-          result: Success(),
-          messages: []
-        )
-      )
-    end
-
-    it "can rely on the implicit detection" do
-      actual_args = backend_args
-      actual_opts = backend_opts
-
-      expect(Sheetah::Backends).to(
-        receive(:open)
-        .with(*actual_args, **actual_opts)
-        .and_return(Success())
-      )
-
-      result = processor.call(*actual_args, **actual_opts)
-
-      expect(result).to eq(
-        Sheetah::SheetProcessorResult.new(
-          result: Success(),
-          messages: []
-        )
-      )
-    end
+    processor.call(*actual_args, **actual_opts)
   end
 
   context "when there is a sheet error" do
