@@ -354,34 +354,24 @@ RSpec.describe Sheetah::Messaging::Messenger do
     let(:code) { double }
     let(:code_data) { double }
 
+    let(:message) do
+      Sheetah::Messaging::Message.new(code: code, code_data: code_data)
+    end
+
     let(:messenger) { described_class.new(scope: scope, scope_data: scope_data) }
 
     describe "#warn" do
       it "returns the receiver" do
-        expect(messenger.warn(code, code_data)).to be(messenger)
+        expect(messenger.warn(message)).to be(messenger)
       end
 
       it "adds the code & code_data as a warning" do
-        messenger.warn(code, code_data)
+        messenger.warn(message)
 
         expect(messenger.messages).to contain_exactly(
           Sheetah::Messaging::Message.new(
             code: code,
             code_data: code_data,
-            scope: scope,
-            scope_data: scope_data,
-            severity: severities::WARN
-          )
-        )
-      end
-
-      it "may do without code_data" do
-        messenger.warn(code)
-
-        expect(messenger.messages).to contain_exactly(
-          Sheetah::Messaging::Message.new(
-            code: code,
-            code_data: nil,
             scope: scope,
             scope_data: scope_data,
             severity: severities::WARN
@@ -392,11 +382,11 @@ RSpec.describe Sheetah::Messaging::Messenger do
 
     describe "#error" do
       it "returns the receiver" do
-        expect(messenger.error(code, code_data)).to be(messenger)
+        expect(messenger.error(message)).to be(messenger)
       end
 
       it "adds the code & code_data as an error" do
-        messenger.error(code, code_data)
+        messenger.error(message)
 
         expect(messenger.messages).to contain_exactly(
           Sheetah::Messaging::Message.new(
@@ -408,45 +398,45 @@ RSpec.describe Sheetah::Messaging::Messenger do
           )
         )
       end
+    end
+  end
 
-      it "may do without code_data" do
-        messenger.error(code)
+  describe "validating messages" do
+    let(:message) do
+      Sheetah::Messaging::Message.new(code: double)
+    end
 
-        expect(messenger.messages).to contain_exactly(
-          Sheetah::Messaging::Message.new(
-            code: code,
-            code_data: nil,
-            scope: scope,
-            scope_data: scope_data,
-            severity: severities::ERROR
-          )
-        )
+    it "implicitly depends on a global config" do
+      config = instance_double(Sheetah::Messaging::Config, validate_messages: double)
+      allow(Sheetah::Messaging).to receive(:config).and_return(config)
+      messenger = described_class.new
+      expect(messenger.validate_messages).to eq(config.validate_messages)
+    end
+
+    it "is passed to a duplicate" do
+      messenger = described_class.new(validate_messages: val = double)
+      expect(messenger.dup.validate_messages).to eq(val)
+    end
+
+    context "when enabled" do
+      let(:messenger) do
+        described_class.new(validate_messages: true)
+      end
+
+      it "validates a message while adding it" do
+        expect(message).to receive(:validate).with(no_args)
+        messenger.warn(message)
       end
     end
 
-    describe "#exception" do
-      let(:e) { double }
-
-      before do
-        allow(e).to receive(:msg_code).and_return(code)
+    context "when disabled" do
+      let(:messenger) do
+        described_class.new(validate_messages: false)
       end
 
-      it "returns the receiver" do
-        expect(messenger.exception(e)).to be(messenger)
-      end
-
-      it "adds the exception's msg_code as an error" do
-        messenger.exception(e)
-
-        expect(messenger.messages).to contain_exactly(
-          Sheetah::Messaging::Message.new(
-            code: code,
-            code_data: nil,
-            scope: scope,
-            scope_data: scope_data,
-            severity: severities::ERROR
-          )
-        )
+      it "validates a message while adding it" do
+        expect(message).not_to receive(:validate)
+        messenger.warn(message)
       end
     end
   end

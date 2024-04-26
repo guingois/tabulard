@@ -20,3 +20,6 @@ gem "yard", "~> 0.9.36"
 
 # An optional library, used to parse XLSX documents when needed
 gem "roo", "~> 2.10"
+
+# Manage environment variables within spec examples
+gem "climate_control", "~> 1.2"

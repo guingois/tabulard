@@ -1,25 +1,28 @@
 # frozen_string_literal: true
 
 require_relative "constants"
+require_relative "validations"
 
 module Sheetah
   module Messaging
     class Message
+      include Validations
+
       def initialize(
         code:,
         code_data: nil,
-        scope: nil,
+        scope: SCOPES::SHEET,
         scope_data: nil,
-        severity: nil
+        severity: SEVERITIES::WARN
       )
         @code        = code
-        @code_data   = code_data   || nil
-        @scope       = scope       || SCOPES::SHEET
-        @scope_data  = scope_data  || nil
-        @severity    = severity    || SEVERITIES::WARN
+        @code_data   = code_data
+        @scope       = scope
+        @scope_data  = scope_data
+        @severity    = severity
       end
 
-      attr_reader(
+      attr_accessor(
         :code,
         :code_data,
         :scope,
@@ -40,6 +43,16 @@ module Sheetah
         parts = [scoping_to_s, "#{severity}: #{code}", code_data]
         parts.compact!
         parts.join(" ")
+      end
+
+      def to_h
+        {
+          code: code,
+          code_data: code_data,
+          scope: scope,
+          scope_data: scope_data,
+          severity: severity,
+        }
       end
 
       private
