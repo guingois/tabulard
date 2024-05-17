@@ -6,16 +6,7 @@ module Sheetah
   class Attribute
     def initialize(key:, type:)
       @key = key
-
-      @type =
-        case type
-        when Hash
-          Composite.new(**type)
-        when Array
-          Composite.new(composite: :array, scalars: type)
-        else
-          Scalar.new(type)
-        end
+      @type = AttributeTypes.build(type)
     end
 
     attr_reader :key, :type
@@ -42,6 +33,19 @@ module Sheetah
     def freeze
       type.freeze
       super
+    end
+  end
+
+  module AttributeTypes
+    def self.build(type)
+      case type
+      when Hash
+        Composite.new(**type)
+      when Array
+        Composite.new(composite: :array, scalars: type)
+      else
+        Scalar.new(type)
+      end
     end
 
     class Value
@@ -102,7 +106,7 @@ module Sheetah
         super
       end
     end
-
-    private_constant :Value, :Scalar, :Composite
   end
+
+  private_constant :AttributeTypes
 end
