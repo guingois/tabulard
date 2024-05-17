@@ -10,11 +10,11 @@ module Sheetah
       @type =
         case type
         when Hash
-          CompositeType.new(**type)
+          Composite.new(**type)
         when Array
-          CompositeType.new(composite: :array, scalars: type)
+          Composite.new(composite: :array, scalars: type)
         else
-          ScalarType.new(type)
+          Scalar.new(type)
         end
     end
 
@@ -44,65 +44,65 @@ module Sheetah
       super
     end
 
-    class Scalar
-      def initialize(name)
-        @required = name.end_with?("!")
-        @name = (@required ? name.slice(0..-2) : name).to_sym
+    class Value
+      def initialize(type)
+        @required = type.end_with?("!")
+        @type = (@required ? type.slice(0..-2) : type).to_sym
       end
 
-      attr_reader :name, :required
+      attr_reader :type, :required
     end
 
-    class ScalarType
-      def initialize(scalar)
-        @scalar = Scalar.new(scalar)
+    class Scalar
+      def initialize(value)
+        @value = Value.new(value)
       end
 
       def compile(container)
-        container.scalar(@scalar.name)
+        container.scalar(@value.type)
       end
 
       def each_column
         return enum_for(:each_column) { 1 } unless block_given?
 
-        yield nil, @scalar.required
+        yield nil, @value.required
 
         self
       end
 
       def freeze
-        @scalar.freeze
+        @value.freeze
         super
       end
     end
 
-    class CompositeType
+    class Composite
       def initialize(composite:, scalars:)
-        @composite = composite
-        @scalars = scalars.map { |scalar| Scalar.new(scalar) }
+        @composite_type = composite
+        @values = scalars.map { |scalar| Value.new(scalar) }
       end
 
       def compile(container)
-        container.composite(@composite, @scalars.map(&:name))
+        container.composite(@composite_type, @values.map(&:type))
       end
 
       def each_column
-        return enum_for(:each_column) { @scalars.size } unless block_given?
+        return enum_for(:each_column) { @values.size } unless block_given?
 
-        @scalars.each_with_index do |scalar, index|
-          yield index, scalar.required
+        @values.each_with_index do |value, index|
+          yield index, value.required
         end
 
         self
       end
 
       def freeze
-        @scalars.freeze
-        @scalars.each(&:freeze)
+        @values.freeze
+        @values.each(&:freeze)
         super
       end
     end
 
-    private_constant :Scalar, :ScalarType, :CompositeType
+    private_constant :Value, :Scalar, :Composite
   end
 end
