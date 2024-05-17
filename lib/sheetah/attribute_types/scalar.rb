@@ -5,8 +5,15 @@ require_relative "value"
 module Sheetah
   module AttributeTypes
     class Scalar
+      def self.build(...)
+        value = Value.build(...)
+
+        scalar = new(value)
+        scalar.freeze
+      end
+
       def initialize(value)
-        @value = Value.new(value)
+        @value = value
       end
 
       def compile(container)
@@ -19,11 +26,6 @@ module Sheetah
         yield nil, value.required
 
         self
-      end
-
-      def freeze
-        value.freeze
-        super
       end
 
       def ==(other)

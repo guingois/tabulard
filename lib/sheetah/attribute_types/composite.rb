@@ -5,9 +5,17 @@ require_relative "value"
 module Sheetah
   module AttributeTypes
     class Composite
+      def self.build(composite:, scalars:)
+        scalars = scalars.map { |scalar| Value.build(scalar) }
+        scalars.freeze
+
+        composite = new(composite: composite, scalars: scalars)
+        composite.freeze
+      end
+
       def initialize(composite:, scalars:)
         @composite_type = composite
-        @values = scalars.map { |scalar| Value.new(scalar) }
+        @values = scalars
       end
 
       def compile(container)
@@ -22,12 +30,6 @@ module Sheetah
         end
 
         self
-      end
-
-      def freeze
-        values.freeze
-        values.each(&:freeze)
-        super
       end
 
       def ==(other)

@@ -5,9 +5,16 @@ require_relative "column"
 
 module Sheetah
   class Attribute
+    def self.build(key:, type:)
+      type = AttributeTypes.build(type)
+
+      attribute = new(key: key, type: type)
+      attribute.freeze
+    end
+
     def initialize(key:, type:)
       @key = key
-      @type = AttributeTypes.build(type)
+      @type = type
     end
 
     attr_reader :key, :type
@@ -29,11 +36,6 @@ module Sheetah
           required: required
         )
       end
-    end
-
-    def freeze
-      type.freeze
-      super
     end
   end
 end

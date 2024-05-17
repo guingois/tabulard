@@ -26,8 +26,18 @@ module Sheetah
   # specification, and composite attributes will produce as many columns as
   # required by the number of scalar values they hold.
   class Template
+    def self.build(attributes:, **kwargs)
+      attributes = attributes.map { |attribute| Attribute.build(**attribute) }
+      attributes.freeze
+
+      template = new(attributes: attributes, **kwargs)
+      template.freeze
+    end
+
     def initialize(attributes:, ignore_unspecified_columns: false)
-      @attributes = build_attributes(attributes)
+      ensure_attributes_unicity(attributes)
+
+      @attributes = attributes
       @ignore_unspecified_columns = ignore_unspecified_columns
     end
 
@@ -48,12 +58,6 @@ module Sheetah
       specification.freeze
     end
 
-    def freeze
-      attributes.freeze
-      attributes.each(&:freeze)
-      super
-    end
-
     def ==(other)
       other.is_a?(self.class) &&
         attributes == other.attributes &&
@@ -66,18 +70,16 @@ module Sheetah
 
     private
 
-    def build_attributes(attributes)
-      uniq_keys = Set.new
+    def ensure_attributes_unicity(attributes)
+      keys = Set.new
 
-      attributes.map do |kwargs|
-        attribute = Attribute.new(**kwargs)
-
-        unless uniq_keys.add?(attribute.key)
-          raise Errors::SpecError, "Duplicated key: #{attribute.key.inspect}"
-        end
-
-        attribute
+      duplicate = attributes.find do |attribute|
+        !keys.add?(attribute.key)
       end
+
+      return unless duplicate
+
+      raise Errors::SpecError, "Duplicated key: #{duplicate.key.inspect}"
     end
   end
 end

@@ -8,11 +8,11 @@ module Sheetah
     def self.build(type)
       case type
       when Hash
-        Composite.new(**type)
+        Composite.build(**type)
       when Array
-        Composite.new(composite: :array, scalars: type)
+        Composite.build(composite: :array, scalars: type)
       else
-        Scalar.new(type)
+        Scalar.build(type)
       end
     end
   end
