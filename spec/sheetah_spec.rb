@@ -18,18 +18,18 @@ RSpec.describe Sheetah, monadic_result: true do
       attributes: [
         {
           key: :foo,
-          type: :reverse_string!,
+          type: :reverse_string,
         },
         {
           key: "bar",
           type: {
             composite: :array,
             scalars: %i[
-              string
+              string?
+              scalar?
+              email?
+              scalar?
               scalar
-              email
-              scalar
-              scalar!
             ],
           },
         },

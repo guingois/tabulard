@@ -23,12 +23,12 @@ RSpec.describe Sheetah::AttributeTypes do
     let(:type) do
       {
         type: :foo,
-        required: true,
+        required: false,
       }
     end
 
     it "has the expected type" do
-      expect(build(type)).to eq(scalar(value(type: :foo, required: true)))
+      expect(build(type)).to eq(scalar(value(type: :foo, required: false)))
     end
   end
 
@@ -38,7 +38,7 @@ RSpec.describe Sheetah::AttributeTypes do
     end
 
     it "has the expected type" do
-      expect(build(type)).to eq(scalar(value(type: :foo, required: false)))
+      expect(build(type)).to eq(scalar(value(type: :foo, required: true)))
     end
   end
 
@@ -48,8 +48,8 @@ RSpec.describe Sheetah::AttributeTypes do
         composite: :oof,
         scalars: [
           :foo,
-          :bar!,
-          { type: :baz, required: true },
+          :bar?,
+          { type: :baz, required: false },
         ],
       }
     end
@@ -59,9 +59,9 @@ RSpec.describe Sheetah::AttributeTypes do
         composite(
           composite: :oof,
           scalars: [
-            value(type: :foo, required: false),
-            value(type: :bar, required: true),
-            value(type: :baz, required: true),
+            value(type: :foo, required: true),
+            value(type: :bar, required: false),
+            value(type: :baz, required: false),
           ]
         )
       )
@@ -72,8 +72,8 @@ RSpec.describe Sheetah::AttributeTypes do
     let(:type) do
       [
         :foo,
-        :bar!,
-        { type: :baz, required: true },
+        :bar?,
+        { type: :baz, required: false },
       ]
     end
 
@@ -82,9 +82,9 @@ RSpec.describe Sheetah::AttributeTypes do
         composite(
           composite: :array,
           scalars: [
-            value(type: :foo, required: false),
-            value(type: :bar, required: true),
-            value(type: :baz, required: true),
+            value(type: :foo, required: true),
+            value(type: :bar, required: false),
+            value(type: :baz, required: false),
           ]
         )
       )

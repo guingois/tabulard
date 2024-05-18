@@ -29,10 +29,11 @@ module Sheetah
 
       def self.from_type_name(type)
         type = type.to_s
-        required = type.end_with?("!")
-        type = (required ? type.slice(0..-2) : type).to_sym
 
-        new(type: type, required: required)
+        optional = type.end_with?("?")
+        type = (optional ? type.slice(0..-2) : type).to_sym
+
+        new(type: type, required: !optional)
       end
 
       private_class_method :from_type_name
@@ -40,7 +41,7 @@ module Sheetah
       # @param type [Symbol] The name used to refer to a scalar type from a {Types::Container}.
       # @param required [Boolean] Is the value required to be given in the input ?
       # @see .build
-      def initialize(type:, required: false)
+      def initialize(type:, required: true)
         @type = type
         @required = required
       end
