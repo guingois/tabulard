@@ -8,6 +8,7 @@ RSpec.describe Sheetah::Column do
   let(:index) { double }
   let(:header) { double }
   let(:header_pattern) { Object.new }
+  let(:required) { false }
 
   let(:col) do
     described_class.new(
@@ -15,12 +16,9 @@ RSpec.describe Sheetah::Column do
       type: type,
       index: index,
       header: header,
-      header_pattern: header_pattern
+      header_pattern: header_pattern,
+      required: required
     )
-  end
-
-  it "is frozen" do
-    expect(col).to be_frozen
   end
 
   describe "#key" do
@@ -48,31 +46,14 @@ RSpec.describe Sheetah::Column do
   end
 
   describe "#header_pattern" do
-    it "reads a frozen attribute" do
+    it "reads the attribute" do
       expect(col.header_pattern).to be(header_pattern)
-      expect(col.header_pattern).to be_frozen
     end
+  end
 
-    context "when the value is not given" do
-      let(:header_copy) { Object.new }
-
-      let(:col) do
-        described_class.new(
-          key: key,
-          type: type,
-          index: index,
-          header: header
-        )
-      end
-
-      before do
-        allow(header).to receive(:dup).and_return(header_copy)
-      end
-
-      it "defaults to a frozen copy of the header value" do
-        expect(col.header).not_to be_frozen
-        expect(col.header_pattern).to be(header_copy) & be_frozen
-      end
+  describe "#required?" do
+    it "reads the attribute" do
+      expect(col.required?).to be(required)
     end
   end
 end

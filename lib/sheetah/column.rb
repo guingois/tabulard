@@ -7,20 +7,22 @@ module Sheetah
       type:,
       index:,
       header:,
-      header_pattern: nil,
-      required: false
+      header_pattern:,
+      required:
     )
       @key            = key
       @type           = type
       @index          = index
       @header         = header
-      @header_pattern = (header_pattern || header.dup).freeze
+      @header_pattern = header_pattern
       @required       = required
-
-      freeze
     end
 
-    attr_reader :key, :type, :index, :header, :header_pattern
+    attr_reader :key,
+                :type,
+                :index,
+                :header,
+                :header_pattern
 
     def required?
       @required
