@@ -14,7 +14,7 @@ module Sheetah
       header = key.to_s.capitalize
       header = "#{header} #{index + 1}" if index
 
-      pattern = /^#{header}$/i
+      pattern = /^#{Regexp.escape(header)}$/i
 
       [header, pattern]
     end
