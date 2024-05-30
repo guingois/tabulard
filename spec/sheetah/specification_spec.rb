@@ -3,72 +3,44 @@
 require "sheetah/specification"
 
 RSpec.describe Sheetah::Specification do
-  let(:spec) do
-    described_class.new(columns: columns)
-  end
-
   describe "#get" do
-    let(:regexp_pattern) do
-      /foo\d{3}bar/i
+    let(:header) do
+      "foo"
     end
 
-    let(:string_pattern) do
-      "Doubitchou"
+    let(:column0) do
+      instance_double(Sheetah::Column, :column0, header_pattern: double(:pattern0))
     end
 
-    let(:other_pattern) do
-      double
+    let(:column1) do
+      instance_double(Sheetah::Column, :column1, header_pattern: double(:pattern1))
     end
 
-    let(:columns) do
-      [
-        instance_double(Sheetah::Column, :string, header_pattern: string_pattern),
-        instance_double(Sheetah::Column, :regexp, header_pattern: regexp_pattern),
-        instance_double(Sheetah::Column, :other, header_pattern: other_pattern),
-      ]
+    let(:spec) do
+      described_class.new(columns: [column0, column1])
+    end
+
+    before do
+      allow(column0.header_pattern).to receive(:match?).with(anything).and_return(false)
+      allow(column1.header_pattern).to receive(:match?).with(anything).and_return(false)
     end
 
     it "returns nil when header is nil" do
       expect(spec.get(nil)).to be_nil
     end
 
-    context "with a Regexp pattern" do
-      it "returns the matching column" do
-        expect(spec.get("foo123bar")).to eq(columns[1])
-        expect(spec.get("Foo480BAR")).to eq(columns[1])
-      end
+    it "may match with a pattern" do
+      allow(column0.header_pattern).to receive(:match?).with(header).and_return(true)
+      expect(spec.get(header)).to eq(column0)
     end
 
-    context "with a String pattern" do
-      it "returns the matching column" do
-        expect(spec.get("Doubitchou")).to eq(columns[0])
-      end
-
-      it "matches case-sensitively" do
-        expect(spec.get("doubitchou")).to be_nil
-      end
+    it "may match with another pattern" do
+      allow(column1.header_pattern).to receive(:match?).with(header).and_return(true)
+      expect(spec.get(header)).to eq(column1)
     end
 
-    context "with any other pattern" do
-      let(:header) { "boudoudou" }
-
-      it "matches an equivalent header" do
-        allow(other_pattern).to receive(:===).with(header).and_return(true)
-        expect(spec.get(header)).to eq(columns[2])
-      end
-
-      it "doesn't match a non-equivalent header" do
-        allow(other_pattern).to receive(:===).with(header).and_return(false)
-        expect(spec.get(header)).to be_nil
-      end
-    end
-
-    context "when frozen" do
-      it "can get existing patterns" do
-        spec.freeze
-
-        expect(spec.get("Doubitchou")).to eq(columns[0])
-      end
+    it "may not match at all" do
+      expect(spec.get(header)).to be_nil
     end
   end
 end

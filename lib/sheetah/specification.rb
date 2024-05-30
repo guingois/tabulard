@@ -11,7 +11,7 @@ module Sheetah
       return if header.nil?
 
       @columns.find do |column|
-        column.header_pattern === header # rubocop:disable Style/CaseEquality
+        column.header_pattern.match?(header)
       end
     end
 
