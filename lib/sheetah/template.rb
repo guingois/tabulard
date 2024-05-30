@@ -32,13 +32,18 @@ module Sheetah
     end
 
     def apply(config)
-      specification = Specification.new(ignore_unspecified_columns: @ignore_unspecified_columns)
+      columns = []
 
       @attributes.each do |attribute|
         attribute.each_column(config) do |column|
-          specification.set(column.header_pattern, column)
+          columns << column
         end
       end
+
+      specification = Specification.new(
+        columns: columns.freeze,
+        ignore_unspecified_columns: @ignore_unspecified_columns
+      )
 
       specification.freeze
     end
