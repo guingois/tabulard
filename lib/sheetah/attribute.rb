@@ -16,8 +16,6 @@ module Sheetah
         else
           ScalarType.new(type)
         end
-
-      freeze
     end
 
     attr_reader :key, :type
@@ -41,6 +39,11 @@ module Sheetah
       end
     end
 
+    def freeze
+      type.freeze
+      super
+    end
+
     class Scalar
       def initialize(name)
         @required = name.end_with?("!")
@@ -53,7 +56,6 @@ module Sheetah
     class ScalarType
       def initialize(scalar)
         @scalar = Scalar.new(scalar)
-        freeze
       end
 
       def compile(container)
@@ -67,13 +69,17 @@ module Sheetah
 
         self
       end
+
+      def freeze
+        @scalar.freeze
+        super
+      end
     end
 
     class CompositeType
       def initialize(composite:, scalars:)
         @composite = composite
-        @scalars = scalars.map { |scalar| Scalar.new(scalar) }.freeze
-        freeze
+        @scalars = scalars.map { |scalar| Scalar.new(scalar) }
       end
 
       def compile(container)
@@ -88,6 +94,12 @@ module Sheetah
         end
 
         self
+      end
+
+      def freeze
+        @scalars.freeze
+        @scalars.each(&:freeze)
+        super
       end
     end
 

@@ -38,7 +38,7 @@ RSpec.describe Sheetah, monadic_result: true do
   end
 
   let(:template) do
-    Sheetah::Template.new(**template_opts)
+    Sheetah::Template.new(**template_opts).freeze
   end
 
   let(:template_config) do

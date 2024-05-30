@@ -48,12 +48,18 @@ module Sheetah
       specification.freeze
     end
 
+    def freeze
+      @attributes.freeze
+      @attributes.each(&:freeze)
+      super
+    end
+
     private
 
     def build_attributes(attributes)
       uniq_keys = Set.new
 
-      uniq_attributes = attributes.map do |kwargs|
+      attributes.map do |kwargs|
         attribute = Attribute.new(**kwargs)
 
         unless uniq_keys.add?(attribute.key)
@@ -62,8 +68,6 @@ module Sheetah
 
         attribute
       end
-
-      uniq_attributes.freeze
     end
   end
 end
