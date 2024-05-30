@@ -36,7 +36,7 @@ module Sheetah
 
       @attributes.each do |attribute|
         attribute.each_column(config) do |column|
-          columns << column
+          columns << column.freeze
         end
       end
 
