@@ -6,10 +6,9 @@ require_relative "attribute_types/composite"
 module Sheetah
   module AttributeTypes
     def self.build(type)
-      case type
-      when Hash
+      if type.is_a?(Hash) && type.key?(:composite)
         Composite.build(**type)
-      when Array
+      elsif type.is_a?(Array)
         Composite.build(composite: :array, scalars: type)
       else
         Scalar.build(type)
