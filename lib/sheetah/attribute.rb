@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative "attribute_types"
 require_relative "column"
 
 module Sheetah
@@ -35,78 +36,4 @@ module Sheetah
       super
     end
   end
-
-  module AttributeTypes
-    def self.build(type)
-      case type
-      when Hash
-        Composite.new(**type)
-      when Array
-        Composite.new(composite: :array, scalars: type)
-      else
-        Scalar.new(type)
-      end
-    end
-
-    class Value
-      def initialize(type)
-        @required = type.end_with?("!")
-        @type = (@required ? type.slice(0..-2) : type).to_sym
-      end
-
-      attr_reader :type, :required
-    end
-
-    class Scalar
-      def initialize(value)
-        @value = Value.new(value)
-      end
-
-      def compile(container)
-        container.scalar(@value.type)
-      end
-
-      def each_column
-        return enum_for(:each_column) { 1 } unless block_given?
-
-        yield nil, @value.required
-
-        self
-      end
-
-      def freeze
-        @value.freeze
-        super
-      end
-    end
-
-    class Composite
-      def initialize(composite:, scalars:)
-        @composite_type = composite
-        @values = scalars.map { |scalar| Value.new(scalar) }
-      end
-
-      def compile(container)
-        container.composite(@composite_type, @values.map(&:type))
-      end
-
-      def each_column
-        return enum_for(:each_column) { @values.size } unless block_given?
-
-        @values.each_with_index do |value, index|
-          yield index, value.required
-        end
-
-        self
-      end
-
-      def freeze
-        @values.freeze
-        @values.each(&:freeze)
-        super
-      end
-    end
-  end
-
-  private_constant :AttributeTypes
 end
