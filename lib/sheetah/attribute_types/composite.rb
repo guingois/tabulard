@@ -11,13 +11,13 @@ module Sheetah
       end
 
       def compile(container)
-        container.composite(@composite_type, @values.map(&:type))
+        container.composite(composite_type, values.map(&:type))
       end
 
       def each_column
-        return enum_for(:each_column) { @values.size } unless block_given?
+        return enum_for(:each_column) { values.size } unless block_given?
 
-        @values.each_with_index do |value, index|
+        values.each_with_index do |value, index|
           yield index, value.required
         end
 
@@ -25,10 +25,20 @@ module Sheetah
       end
 
       def freeze
-        @values.freeze
-        @values.each(&:freeze)
+        values.freeze
+        values.each(&:freeze)
         super
       end
+
+      def ==(other)
+        other.is_a?(self.class) &&
+          composite_type == other.composite_type &&
+          values == other.values
+      end
+
+      protected
+
+      attr_reader :composite_type, :values
     end
   end
 end

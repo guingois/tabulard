@@ -9,6 +9,12 @@ module Sheetah
       end
 
       attr_reader :type, :required
+
+      def ==(other)
+        other.is_a?(self.class) &&
+          type == other.type &&
+          required == other.required
+      end
     end
   end
 end

@@ -34,7 +34,7 @@ module Sheetah
     def apply(config)
       columns = []
 
-      @attributes.each do |attribute|
+      attributes.each do |attribute|
         attribute.each_column(config) do |column|
           columns << column.freeze
         end
@@ -42,17 +42,27 @@ module Sheetah
 
       specification = Specification.new(
         columns: columns.freeze,
-        ignore_unspecified_columns: @ignore_unspecified_columns
+        ignore_unspecified_columns: ignore_unspecified_columns
       )
 
       specification.freeze
     end
 
     def freeze
-      @attributes.freeze
-      @attributes.each(&:freeze)
+      attributes.freeze
+      attributes.each(&:freeze)
       super
     end
+
+    def ==(other)
+      other.is_a?(self.class) &&
+        attributes == other.attributes &&
+        ignore_unspecified_columns == other.ignore_unspecified_columns
+    end
+
+    protected
+
+    attr_reader :attributes, :ignore_unspecified_columns
 
     private
 
