@@ -12,6 +12,8 @@ module Sheetah
       attribute.freeze
     end
 
+    # @param key [String, Symbol] The key in the resulting Hash after processing a line.
+    # @param type [AttributeTypes::Scalar, AttributeTypes::Composite] The type of the value.
     def initialize(key:, type:)
       @key = key
       @type = type
