@@ -37,9 +37,9 @@ module Sheetah
 
       private_class_method :from_type_name
 
-      # @param type [Symbol] The name used to refer to a type from a {Types::Container}.
+      # @param type [Symbol] The name used to refer to a scalar type from a {Types::Container}.
       # @param required [Boolean] Is the value required to be given in the input ?
-      # @see ::build
+      # @see .build
       def initialize(type:, required: false)
         @type = type
         @required = required
