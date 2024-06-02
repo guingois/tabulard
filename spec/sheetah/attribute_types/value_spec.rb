@@ -22,14 +22,14 @@ RSpec.describe Sheetah::AttributeTypes::Value do
     end
 
     context "when the type requirement is implicit" do
-      it "has an optional type" do
+      it "has a required type" do
         value = buildval(type: type)
-        expect(value).to eq(newval(type: type, required: false))
+        expect(value).to eq(newval(type: type, required: true))
       end
 
       it "can be expressed with syntactic sugar" do
         value = buildval(type)
-        expect(value).to eq(newval(type: type, required: false))
+        expect(value).to eq(newval(type: type, required: true))
       end
     end
 
@@ -44,9 +44,9 @@ RSpec.describe Sheetah::AttributeTypes::Value do
         expect(value).to eq(newval(type: type, required: true))
       end
 
-      it "can be required using syntactic sugar" do
-        value = buildval(:"#{type}!")
-        expect(value).to eq(newval(type: type, required: true))
+      it "can be optional using syntactic sugar" do
+        value = buildval(:"#{type}?")
+        expect(value).to eq(newval(type: type, required: false))
       end
     end
   end
