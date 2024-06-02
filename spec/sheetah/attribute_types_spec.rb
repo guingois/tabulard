@@ -1,0 +1,93 @@
+# frozen_string_literal: true
+
+require "sheetah/attribute_types"
+
+RSpec.describe Sheetah::AttributeTypes do
+  def build(...)
+    described_class.build(...)
+  end
+
+  def value(...)
+    Sheetah::AttributeTypes::Value.new(...)
+  end
+
+  def scalar(...)
+    Sheetah::AttributeTypes::Scalar.new(...)
+  end
+
+  def composite(...)
+    Sheetah::AttributeTypes::Composite.new(...)
+  end
+
+  context "when given a scalar as a Hash" do
+    let(:type) do
+      {
+        type: :foo,
+        required: true,
+      }
+    end
+
+    it "has the expected type" do
+      expect(build(type)).to eq(scalar(value(type: :foo, required: true)))
+    end
+  end
+
+  context "when given a scalar as a Symbol" do
+    let(:type) do
+      :foo
+    end
+
+    it "has the expected type" do
+      expect(build(type)).to eq(scalar(value(type: :foo, required: false)))
+    end
+  end
+
+  context "when given a composite as a Hash" do
+    let(:type) do
+      {
+        composite: :oof,
+        scalars: [
+          :foo,
+          :bar!,
+          { type: :baz, required: true },
+        ],
+      }
+    end
+
+    it "has the expected type and scalars" do
+      expect(build(type)).to eq(
+        composite(
+          composite: :oof,
+          scalars: [
+            value(type: :foo, required: false),
+            value(type: :bar, required: true),
+            value(type: :baz, required: true),
+          ]
+        )
+      )
+    end
+  end
+
+  context "when given a composite as an Array" do
+    let(:type) do
+      [
+        :foo,
+        :bar!,
+        { type: :baz, required: true },
+      ]
+    end
+
+    it "has the expected type and scalars" do
+      expect(build(type)).to eq(
+        composite(
+          composite: :array,
+          scalars: [
+            value(type: :foo, required: false),
+            value(type: :bar, required: true),
+            value(type: :baz, required: true),
+          ]
+        )
+      )
+    end
+  end
+end

@@ -1,24 +1,42 @@
 # frozen_string_literal: true
 
+require_relative "attribute_types"
 require_relative "column"
 
 module Sheetah
+  # The main building block of a {Template}.
   class Attribute
-    def initialize(key:, type:)
-      @key = key
+    # A smarter version of {#initialize}.
+    #
+    # - It automatically freezes the instance before returning it.
+    # - It instantiates and injects a type automatically by passing the arguments to
+    #   {AttributeTypes.build}.
+    #
+    # @return [Attribute] a frozen instance
+    def self.build(key:, type:)
+      type = AttributeTypes.build(type)
 
-      @type =
-        case type
-        when Hash
-          CompositeType.new(**type)
-        when Array
-          CompositeType.new(composite: :array, scalars: type)
-        else
-          ScalarType.new(type)
-        end
+      attribute = new(key: key, type: type)
+      attribute.freeze
     end
 
-    attr_reader :key, :type
+    # @param key [String, Symbol] The key in the resulting Hash after processing a row.
+    # @param type [AttributeType] The type of the value.
+    def initialize(key:, type:)
+      @key = key
+      @type = type
+    end
+
+    # @return [Symbol, String]
+    attr_reader :key
+
+    # An abstract specification of the type of a value in the resulting hash.
+    #
+    # It will be used to produce the {Types::Type concrete type} of a column (or a list of columns)
+    # when a {TemplateConfig} is {Template#apply applied} to the {Template} owning the attribtue.
+    #
+    # @return [AttributeType]
+    attr_reader :type
 
     def each_column(config)
       return enum_for(:each_column, config) unless block_given?
@@ -38,71 +56,5 @@ module Sheetah
         )
       end
     end
-
-    def freeze
-      type.freeze
-      super
-    end
-
-    class Scalar
-      def initialize(name)
-        @required = name.end_with?("!")
-        @name = (@required ? name.slice(0..-2) : name).to_sym
-      end
-
-      attr_reader :name, :required
-    end
-
-    class ScalarType
-      def initialize(scalar)
-        @scalar = Scalar.new(scalar)
-      end
-
-      def compile(container)
-        container.scalar(@scalar.name)
-      end
-
-      def each_column
-        return enum_for(:each_column) { 1 } unless block_given?
-
-        yield nil, @scalar.required
-
-        self
-      end
-
-      def freeze
-        @scalar.freeze
-        super
-      end
-    end
-
-    class CompositeType
-      def initialize(composite:, scalars:)
-        @composite = composite
-        @scalars = scalars.map { |scalar| Scalar.new(scalar) }
-      end
-
-      def compile(container)
-        container.composite(@composite, @scalars.map(&:name))
-      end
-
-      def each_column
-        return enum_for(:each_column) { @scalars.size } unless block_given?
-
-        @scalars.each_with_index do |scalar, index|
-          yield index, scalar.required
-        end
-
-        self
-      end
-
-      def freeze
-        @scalars.freeze
-        @scalars.each(&:freeze)
-        super
-      end
-    end
-
-    private_constant :Scalar, :ScalarType, :CompositeType
   end
 end

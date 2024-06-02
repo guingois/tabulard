@@ -21,7 +21,7 @@ RSpec.describe Sheetah, monadic_result: true do
           type: :reverse_string!,
         },
         {
-          key: :bar,
+          key: "bar",
           type: {
             composite: :array,
             scalars: %i[
@@ -38,7 +38,7 @@ RSpec.describe Sheetah, monadic_result: true do
   end
 
   let(:template) do
-    Sheetah::Template.new(**template_opts).freeze
+    Sheetah::Template.build(**template_opts)
   end
 
   let(:template_config) do
@@ -92,11 +92,11 @@ RSpec.describe Sheetah, monadic_result: true do
       results = process_to_a(input)
 
       expect(results[0].result).to eq(
-        Success(foo: "olleh", bar: [nil, nil, "foo@bar.baz", nil, Float])
+        Success(foo: "olleh", "bar" => [nil, nil, "foo@bar.baz", nil, Float])
       )
 
       expect(results[1].result).to eq(
-        Success(foo: "dlrow", bar: [nil, nil, "foo@bar.baz", nil, Float])
+        Success(foo: "dlrow", "bar" => [nil, nil, "foo@bar.baz", nil, Float])
       )
     end
 
@@ -130,11 +130,11 @@ RSpec.describe Sheetah, monadic_result: true do
         results = process_to_a(input)
 
         expect(results[0].result).to eq(
-          Success(foo: "olleh", bar: [nil, nil, "foo@bar.baz", nil, Float])
+          Success(foo: "olleh", "bar" => [nil, nil, "foo@bar.baz", nil, Float])
         )
 
         expect(results[1].result).to eq(
-          Success(foo: "dlrow", bar: [nil, nil, "foo@bar.baz", nil, Float])
+          Success(foo: "dlrow", "bar" => [nil, nil, "foo@bar.baz", nil, Float])
         )
       end
     end
