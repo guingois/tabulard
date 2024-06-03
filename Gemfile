@@ -11,9 +11,9 @@ gem "rspec", "~> 3.13"
 gem "simplecov", "~> 0.22.0"
 
 # A Ruby static code analyzer and formatter
-gem "rubocop", "~> 1.63"
+gem "rubocop", "~> 1.64"
 gem "rubocop-performance", "~> 1.21"
-gem "rubocop-rspec", "~> 2.29"
+gem "rubocop-rspec", "~> 2.30"
 
 # A Ruby documentation tool
 gem "yard", "~> 0.9.36"
