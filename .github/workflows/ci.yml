@@ -40,6 +40,7 @@ jobs:
             coverage_report_cobertura: true
     runs-on: ${{ matrix.os }}
     outputs:
+      with_junit: ${{ steps.junit.outcome == 'success' }}
       with_coverage_html: ${{ steps.coverage_html.outcome == 'success' }}
       with_coverage_cobertura: ${{ steps.coverage_cobertura.outcome == 'success' }}
     steps:
@@ -52,10 +53,26 @@ jobs:
           bundler-cache: true
       - name: Run specs
         id: rspec
-        run: bundle exec rspec
+        run: |
+          bundle exec rspec \
+            --format progress \
+            --format RspecJunitFormatter \
+            --out tmp/rspec_junit/${{ matrix.os }}-${{ matrix.ruby }}.xml
         env:
+          # We want to customize the test suite name in JUnit reports, but we can't easily because
+          # of how the 3rd-party formatter works. Hence this hack, which hopefully won't conflict
+          # with the conventional use of the TEST_ENV_NUMBER variable.
+          # See https://github.com/sj26/rspec_junit_formatter/blob/3f79074a9987d722976542d7d6e2ebb470ad47d1/lib/rspec_junit_formatter.rb#L19
+          TEST_ENV_NUMBER: " (${{ matrix.os }}, ${{ matrix.ruby }})"
           TABULARD_COVERAGE_REPORT_HTML: ${{ matrix.coverage_report_html }}
           TABULARD_COVERAGE_REPORT_COBERTURA: ${{ matrix.coverage_report_cobertura }}
+      - name: Persist the JUnit test report
+        id: junit
+        if: success() || (failure() && steps.rspec.outcome == 'failure')
+        uses: actions/upload-artifact@v4
+        with:
+          name: rspec_junit-${{ matrix.os }}-${{ matrix.ruby }}
+          path: tmp/rspec_junit/*
       - name: Persist the Cobertura coverage report
         id: coverage_cobertura
         if: matrix.coverage_report_cobertura && (success() || (failure() && steps.rspec.outcome == 'failure'))
@@ -70,6 +87,28 @@ jobs:
         with:
           name: docs-coverage
           path: docs/coverage
+
+  report_specs:
+    needs:
+      - rspec
+    if: needs.rspec.outputs.with_junit && !cancelled()
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          pattern: rspec_junit-*
+          path: tmp/rspec_junit
+      - uses: mikepenz/action-junit-report@v4
+        with:
+          report_paths: tmp/rspec_junit/*
+          suite_regex: '*'
+          check_name: RSpec Report
+          check_title_template: '{{SUITE_NAME}}: {{TEST_NAME}}'
 
   report_coverage:
     needs:

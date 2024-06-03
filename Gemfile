@@ -7,6 +7,9 @@ gemspec
 # A BDD test harness for Ruby
 gem "rspec", "~> 3.13"
 
+# RSpec results that your CI can read
+gem "rspec_junit_formatter", "~> 0.6.0"
+
 # Code coverage for Ruby
 gem "simplecov", "~> 0.22.0"
 
