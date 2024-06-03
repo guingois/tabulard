@@ -1,8 +1,15 @@
 name: ci
 
 on:
-  push:
+  # Trigger the workflow when a PR has no merge conflict and either it is opened or reopened, or its
+  # head branch is updated.
+  # See https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request
   pull_request:
+
+  # Trigger the workflow when the master branch is updated.
+  push:
+    branches:
+      - master
 
 jobs:
   rubocop:
