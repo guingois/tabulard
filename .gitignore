@@ -1,5 +1,6 @@
 # Miscellaneous ignored files
 /private
+/tmp
 
 # RSpec artifacts
 spec/examples.txt
