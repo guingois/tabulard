@@ -10,6 +10,9 @@ gem "rspec", "~> 3.13"
 # Code coverage for Ruby
 gem "simplecov", "~> 0.22.0"
 
+# Ruby SimpleCov Cobertura Formatter
+gem "simplecov-cobertura", "~> 2.1"
+
 # A Ruby static code analyzer and formatter
 gem "rubocop", "~> 1.64"
 gem "rubocop-performance", "~> 1.21"

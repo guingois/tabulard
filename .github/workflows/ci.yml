@@ -32,10 +32,16 @@ jobs:
         os: [ubuntu-latest, macos-latest]
         ruby: ['3.1', '3.2', '3.3']
         include:
+          - coverage_report_html: false
+            coverage_report_cobertura: false
           - os: ubuntu-latest
             ruby: '3.3'
-            coverage: true
+            coverage_report_html: ${{ github.ref_name == 'master' }}
+            coverage_report_cobertura: true
     runs-on: ${{ matrix.os }}
+    outputs:
+      with_coverage_html: ${{ steps.coverage_html.outcome == 'success' }}
+      with_coverage_cobertura: ${{ steps.coverage_cobertura.outcome == 'success' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -45,18 +51,47 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
       - name: Run specs
+        id: rspec
         run: bundle exec rspec
         env:
-          COVERAGE: ${{ matrix.coverage }}
-      - name: Generate coverage artifact
-        if: ${{ matrix.coverage }}
+          TABULARD_COVERAGE_REPORT_HTML: ${{ matrix.coverage_report_html }}
+          TABULARD_COVERAGE_REPORT_COBERTURA: ${{ matrix.coverage_report_cobertura }}
+      - name: Persist the Cobertura coverage report
+        id: coverage_cobertura
+        if: matrix.coverage_report_cobertura && (success() || (failure() && steps.rspec.outcome == 'failure'))
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage_cobertura
+          path: docs/coverage/coverage.xml
+      - name: Persist the HTML coverage report
+        id: coverage_html
+        if: matrix.coverage_report_html
         uses: actions/upload-artifact@v4
         with:
           name: docs-coverage
           path: docs/coverage
 
+  report_coverage:
+    needs:
+      - rspec
+    if: needs.rspec.outputs.with_coverage_cobertura
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: coverage_cobertura
+          path: tmp
+      - uses: paambaati/codeclimate-action@v6
+        with:
+          coverageLocations: ${{github.workspace}}/tmp/coverage.xml:cobertura
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+
   yard:
     runs-on: ubuntu-latest
+    outputs:
+      with_html: ${{ steps.upload_artifact.outcome == 'success' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -68,17 +103,19 @@ jobs:
       - name: Generate Ruby API documentation
         run : bundle exec yard doc
       - name: Generate Ruby API documentation artifact
+        if: github.ref_name == 'master'
+        id: upload_artifact
         uses: actions/upload-artifact@v4
         with:
           name: docs-ruby
           path: docs/ruby
 
   pages:
-    if: github.ref_name == 'master'
     needs:
       - rubocop
       - rspec
       - yard
+    if: needs.rspec.outputs.with_coverage_html && needs.yard.outputs.with_html
     runs-on: ubuntu-latest
     permissions:
       contents: read
