@@ -1,4 +1,4 @@
-name: ci
+name: check
 
 on:
   # Trigger the workflow when a PR has no merge conflict and either it is opened or reopened, or its
@@ -39,18 +39,16 @@ jobs:
             coverage_report_html: ${{ github.ref_name == 'master' }}
             coverage_report_cobertura: true
     runs-on: ${{ matrix.os }}
-    outputs:
-      with_junit: ${{ steps.junit.outcome == 'success' }}
-      with_coverage_html: ${{ steps.coverage_html.outcome == 'success' }}
-      with_coverage_cobertura: ${{ steps.coverage_cobertura.outcome == 'success' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
+
       - name: Run specs
         id: rspec
         run: |
@@ -66,54 +64,30 @@ jobs:
           TEST_ENV_NUMBER: " (${{ matrix.os }}, ${{ matrix.ruby }})"
           TABULARD_COVERAGE_REPORT_HTML: ${{ matrix.coverage_report_html }}
           TABULARD_COVERAGE_REPORT_COBERTURA: ${{ matrix.coverage_report_cobertura }}
+
       - name: Persist the JUnit test report
-        id: junit
         if: success() || (failure() && steps.rspec.outcome == 'failure')
         uses: actions/upload-artifact@v4
         with:
           name: rspec_junit-${{ matrix.os }}-${{ matrix.ruby }}
           path: tmp/rspec_junit/*
+
       - name: Persist the Cobertura coverage report
-        id: coverage_cobertura
         if: matrix.coverage_report_cobertura && (success() || (failure() && steps.rspec.outcome == 'failure'))
         uses: actions/upload-artifact@v4
         with:
           name: coverage_cobertura
           path: docs/coverage/coverage.xml
+
       - name: Persist the HTML coverage report
-        id: coverage_html
         if: matrix.coverage_report_html
         uses: actions/upload-artifact@v4
         with:
           name: docs-coverage
           path: docs/coverage
 
-  report_specs:
-    needs:
-      - rspec
-    if: needs.rspec.outputs.with_junit && !cancelled()
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      checks: write
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          merge-multiple: true
-          pattern: rspec_junit-*
-          path: tmp/rspec_junit
-      - uses: mikepenz/action-junit-report@v4
-        with:
-          report_paths: tmp/rspec_junit/*
-          suite_regex: '*'
-          check_name: RSpec Report
-          check_title_template: '{{SUITE_NAME}}: {{TEST_NAME}}'
-
   yard:
     runs-on: ubuntu-latest
-    outputs:
-      with_html: ${{ steps.upload_artifact.outcome == 'success' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -126,43 +100,7 @@ jobs:
         run : bundle exec yard doc
       - name: Generate Ruby API documentation artifact
         if: github.ref_name == 'master'
-        id: upload_artifact
         uses: actions/upload-artifact@v4
         with:
           name: docs-ruby
           path: docs/ruby
-
-  pages:
-    needs:
-      - rubocop
-      - rspec
-      - yard
-    if: needs.rspec.outputs.with_coverage_html && needs.yard.outputs.with_html
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pages: write      # to deploy to Pages
-      id-token: write   # to verify the deployment originates from an appropriate source
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Fetch Ruby API documentation artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: docs-ruby
-          path: docs/ruby
-      - name: Fetch coverage artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: docs-coverage
-          path: docs/coverage
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-      - name: Upload Pages
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: docs
-      - name: Deploy Pages
-        id: deployment
-        uses: actions/deploy-pages@v4

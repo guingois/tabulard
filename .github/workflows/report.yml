@@ -1,13 +1,37 @@
-name: ci_reports
+name: report
 
 on:
   workflow_run:
     workflows:
-      - ci
+      - check
     types:
       - completed
 
 jobs:
+  specs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - name: Download JUnit test report
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }} # required to access data from another run
+          run-id: ${{ github.event.workflow_run.id }}
+          merge-multiple: true
+          pattern: rspec_junit-*
+          path: tmp/rspec_junit
+
+      - name: Create commit check
+        uses: mikepenz/action-junit-report@v4
+        with:
+          commit: ${{ github.event.workflow_run.head_sha }}
+          report_paths: tmp/rspec_junit/*
+          suite_regex: '*'
+          check_name: RSpec Report
+          check_title_template: '{{SUITE_NAME}}: {{TEST_NAME}}'
+
   coverage:
     runs-on: ubuntu-latest
     steps:
