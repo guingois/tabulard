@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "sheetah"
+require "foo"
 
 RSpec.describe Sheetah, monadic_result: true do
   let(:types) do
