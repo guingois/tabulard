@@ -1,0 +1,49 @@
+name: ci_reports
+
+on:
+  workflow_run:
+    workflows:
+      - ci
+    types:
+      - completed
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Download Cobertura coverage report
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }} # required to access data from another run
+          run-id: ${{ github.event.workflow_run.id }}
+          name: coverage_cobertura
+          path: tmp
+
+      - name: Install latest CodeClimate Test Reporter
+        env:
+          CC_TEST_REPORTER_PUBKEY: 9BD9E2DD46DA965A537E5B0A5CBF320243B6FD85
+          CC_TEST_REPORTER_BIN_VERSION: test-reporter-latest-linux-amd64
+        run: |
+          curl -LO "https://codeclimate.com/downloads/test-reporter/$CC_TEST_REPORTER_BIN_VERSION"
+          curl -LO "https://codeclimate.com/downloads/test-reporter/$CC_TEST_REPORTER_BIN_VERSION.sha256"
+          curl -LO "https://codeclimate.com/downloads/test-reporter/$CC_TEST_REPORTER_BIN_VERSION.sha256.sig"
+          gpg --keyserver keys.openpgp.org --recv-keys "$CC_TEST_REPORTER_PUBKEY"
+          gpg --verify "$CC_TEST_REPORTER_BIN_VERSION.sha256.sig" "$CC_TEST_REPORTER_BIN_VERSION.sha256"
+          sha256sum --check "$CC_TEST_REPORTER_BIN_VERSION.sha256"
+          mv "$CC_TEST_REPORTER_BIN_VERSION" cc-reporter
+          chmod +x cc-reporter
+
+      - name: Send coverage reports to CodeClimate
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+          GIT_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          GIT_COMMIT_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          ./cc-reporter env
+          ./cc-reporter format-coverage "${{ github.workspace }}/tmp/coverage.xml" -t cobertura -o codeclimate.json
+          ./cc-reporter upload-coverage --input codeclimate.json

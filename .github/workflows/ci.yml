@@ -110,23 +110,6 @@ jobs:
           check_name: RSpec Report
           check_title_template: '{{SUITE_NAME}}: {{TEST_NAME}}'
 
-  report_coverage:
-    needs:
-      - rspec
-    if: needs.rspec.outputs.with_coverage_cobertura
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          name: coverage_cobertura
-          path: tmp
-      - uses: paambaati/codeclimate-action@v6
-        with:
-          coverageLocations: ${{github.workspace}}/tmp/coverage.xml:cobertura
-        env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
-
   yard:
     runs-on: ubuntu-latest
     outputs:
