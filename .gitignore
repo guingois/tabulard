@@ -1,13 +1,13 @@
 # Miscellaneous ignored files
-/private
-/tmp
+/private/
+/tmp/
 
 # RSpec artifacts
-spec/examples.txt
+/spec/examples.txt
 
 # SimpleCov artifacts
-/docs/coverage
+/docs/coverage/
 
 # YARD artifacts
-/.yardoc
-/docs/ruby
+/.yardoc/
+/docs/ruby/
