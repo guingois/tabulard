@@ -16,6 +16,18 @@ branch:
 - [Ruby API](https://tabulard.github.io/tabulard/ruby)
 - [Coverage](https://tabulard.github.io/tabulard/coverage)
 
+## Usage
+
+Add the following to your Gemfile:
+
+```ruby
+gem "tabulard", require: "sheetah/frozen"
+```
+
+Then `bundle install`.
+
+For examples of common use cases, please have a look at `spec/sheetah_spec.rb`.
+
 ## Project status
 
 Tabulard already works pretty well but is still under active

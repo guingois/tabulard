@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.email    = ["id@maen.fr"]
   spec.license  = "Apache-2.0"
   spec.homepage = "https://github.com/tabulard/tabulard"
-  spec.summary  = "Process tabular data from different sources with a rich, unified API"
+  spec.summary  = "A highly-customizable tabular data processor"
 
   spec.required_ruby_version = ">= 3.0"
 
@@ -19,16 +19,20 @@ Gem::Specification.new do |spec|
   # All privileged operations by any of the owners require OTP.
   spec.metadata["rubygems_mfa_required"] = "true"
 
-  spec.files = Dir.chdir(File.expand_path(__dir__)) do
-    git_paths = `git ls-files -z`.split("\x0")
+  bindir = "exe"
+  libdir = "lib"
 
-    git_paths.grep(%r{^(?:exe|lib)/}) + %w[
-      VERSION
-      LICENSE
+  spec.files = Dir.glob(
+    [
+      "#{bindir}/*",
+      "#{libdir}/**/*",
+      "LICENSE",
+      "VERSION",
+      "README.md",
     ]
-  end
+  )
 
-  spec.bindir        = "exe"
-  spec.executables   = spec.files.grep(%r{#{spec.bindir}/}) { |path| File.basename(path) }
-  spec.require_paths = ["lib"]
+  spec.bindir        = bindir
+  spec.executables   = spec.files.grep(%r{#{bindir}/}) { |path| File.basename(path) }
+  spec.require_paths = [libdir]
 end
