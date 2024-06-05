@@ -1,4 +1,4 @@
-name: ci
+name: check
 
 on:
   # Trigger the workflow when a PR has no merge conflict and either it is opened or reopened, or its
@@ -32,24 +32,55 @@ jobs:
         os: [ubuntu-latest, macos-latest]
         ruby: ['3.1', '3.2', '3.3']
         include:
+          - coverage_report_html: false
+            coverage_report_cobertura: false
           - os: ubuntu-latest
             ruby: '3.3'
-            coverage: true
+            coverage_report_html: ${{ github.ref_name == 'master' }}
+            coverage_report_cobertura: true
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
+
       - name: Run specs
-        run: bundle exec rspec
+        id: rspec
+        run: |
+          bundle exec rspec \
+            --format progress \
+            --format RspecJunitFormatter \
+            --out tmp/rspec_junit/${{ matrix.os }}-${{ matrix.ruby }}.xml
         env:
-          COVERAGE: ${{ matrix.coverage }}
-      - name: Generate coverage artifact
-        if: ${{ matrix.coverage }}
+          # We want to customize the test suite name in JUnit reports, but we can't easily because
+          # of how the 3rd-party formatter works. Hence this hack, which hopefully won't conflict
+          # with the conventional use of the TEST_ENV_NUMBER variable.
+          # See https://github.com/sj26/rspec_junit_formatter/blob/3f79074a9987d722976542d7d6e2ebb470ad47d1/lib/rspec_junit_formatter.rb#L19
+          TEST_ENV_NUMBER: " (${{ matrix.os }}, ${{ matrix.ruby }})"
+          TABULARD_COVERAGE_REPORT_HTML: ${{ matrix.coverage_report_html }}
+          TABULARD_COVERAGE_REPORT_COBERTURA: ${{ matrix.coverage_report_cobertura }}
+
+      - name: Persist the JUnit test report
+        if: success() || (failure() && steps.rspec.outcome == 'failure')
+        uses: actions/upload-artifact@v4
+        with:
+          name: rspec_junit-${{ matrix.os }}-${{ matrix.ruby }}
+          path: tmp/rspec_junit/*
+
+      - name: Persist the Cobertura coverage report
+        if: matrix.coverage_report_cobertura && (success() || (failure() && steps.rspec.outcome == 'failure'))
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage_cobertura
+          path: docs/coverage/coverage.xml
+
+      - name: Persist the HTML coverage report
+        if: matrix.coverage_report_html
         uses: actions/upload-artifact@v4
         with:
           name: docs-coverage
@@ -68,42 +99,8 @@ jobs:
       - name: Generate Ruby API documentation
         run : bundle exec yard doc
       - name: Generate Ruby API documentation artifact
+        if: github.ref_name == 'master'
         uses: actions/upload-artifact@v4
         with:
           name: docs-ruby
           path: docs/ruby
-
-  pages:
-    if: github.ref_name == 'master'
-    needs:
-      - rubocop
-      - rspec
-      - yard
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pages: write      # to deploy to Pages
-      id-token: write   # to verify the deployment originates from an appropriate source
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Fetch Ruby API documentation artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: docs-ruby
-          path: docs/ruby
-      - name: Fetch coverage artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: docs-coverage
-          path: docs/coverage
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-      - name: Upload Pages
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: docs
-      - name: Deploy Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
