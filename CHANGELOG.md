@@ -1,5 +1,7 @@
 ## [Unreleased]
 
+## [0.2.0] - 2024-06-05
+
 ### Breaking changes
 
 - Drop support for EOL Ruby versions (older than 3.1).
