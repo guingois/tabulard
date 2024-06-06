@@ -52,4 +52,16 @@ RSpec.shared_examples "sheet/backend_empty" do
       expect(sheet.close).to be_nil
     end
   end
+
+  context "when it is closed" do
+    before { sheet.close }
+
+    it "can't enumerate headers" do
+      expect { sheet.each_header }.to raise_error(Sheetah::Sheet::ClosureError)
+    end
+
+    it "can't enumerate rows" do
+      expect { sheet.each_row }.to raise_error(Sheetah::Sheet::ClosureError)
+    end
+  end
 end

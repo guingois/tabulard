@@ -10,20 +10,20 @@ module Sheetah
       def initialize(table, **opts)
         super(**opts)
 
-        @table = table
-
-        if (table_size = @table.size).positive?
+        if (table_size = table.size).positive?
+          @table      = table
           @headers    = @table[0]
           @rows_count = table_size - 1
           @cols_count = @headers.size
         else
-          @headers    = []
           @rows_count = 0
           @cols_count = 0
         end
       end
 
       def each_header
+        raise_if_closed
+
         return to_enum(:each_header) { @cols_count } unless block_given?
 
         1.upto(@cols_count) do |col|
@@ -34,6 +34,8 @@ module Sheetah
       end
 
       def each_row
+        raise_if_closed
+
         return to_enum(:each_row) unless block_given?
 
         1.upto(@rows_count) do |row|
@@ -47,10 +49,6 @@ module Sheetah
         end
 
         self
-      end
-
-      def close
-        # nothing to do here
       end
     end
   end

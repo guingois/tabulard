@@ -38,6 +38,9 @@ module Sheetah
     class Error < Errors::Error
     end
 
+    class ClosureError < Error
+    end
+
     class InputError < Error
     end
 
@@ -89,6 +92,7 @@ module Sheetah
 
     def initialize(messenger: Messaging::Messenger.new)
       @messenger = messenger
+      @closed = false
     end
 
     attr_reader :messenger
@@ -102,7 +106,25 @@ module Sheetah
     end
 
     def close
-      raise NoMethodError, "You must implement #{self.class}#close => nil"
+      return if closed?
+
+      yield if block_given?
+
+      instance_variables.each { |ivar| remove_instance_variable(ivar) }
+
+      @closed = true
+
+      nil
+    end
+
+    def closed?
+      @closed == true
+    end
+
+    private
+
+    def raise_if_closed
+      raise ClosureError if closed?
     end
   end
 end

@@ -51,6 +51,8 @@ module Sheetah
       end
 
       def each_header
+        raise_if_closed
+
         return to_enum(:each_header) { @cols_count } unless block_given?
 
         @headers.each_with_index do |header, col_idx|
@@ -63,6 +65,8 @@ module Sheetah
       end
 
       def each_row
+        raise_if_closed
+
         return to_enum(:each_row) unless block_given?
 
         handle_malformed_csv do
@@ -80,10 +84,8 @@ module Sheetah
         self
       end
 
-      def close
-        # Do nothing: this backend isn't responsible for opening the IO, and therefore it is not
-        # responsible for closing it either.
-      end
+      # The backend isn't responsible for opening the IO, and therefore it is not responsible for
+      # closing it either.
 
       private
 

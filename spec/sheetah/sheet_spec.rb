@@ -33,6 +33,14 @@ RSpec.describe Sheetah::Sheet, monadic_result: true do
     end
   end
 
+  describe "::ClosureError" do
+    subject { sheet_class::ClosureError }
+
+    it "exposes some kind of Sheetah::Sheet::Error" do
+      expect(subject.superclass).to be(Sheetah::Sheet::Error)
+    end
+  end
+
   describe "::InputError" do
     subject { sheet_class::InputError }
 
@@ -281,10 +289,21 @@ RSpec.describe Sheetah::Sheet, monadic_result: true do
   end
 
   describe "#close" do
-    it "is abstract" do
-      expect { sheet.close }.to raise_error(
-        NoMethodError, "You must implement SheetClass#close => nil"
-      )
+    before { sheet }
+
+    it "removes the instance variables" do
+      expect { sheet.close }.to [
+        change { sheet.instance_variable_defined?(:@foo) }.from(true).to(false),
+        change { sheet.instance_variable_defined?(:@bar) }.from(true).to(false),
+      ].reduce(:&)
+    end
+
+    it "marks the instance as closed" do
+      expect { sheet.close }.to change(sheet, :closed?).from(false).to(true)
+    end
+
+    it "returns nil" do
+      expect(sheet.close).to be_nil
     end
   end
 end
