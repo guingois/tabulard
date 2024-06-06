@@ -35,25 +35,30 @@ module Sheetah
         row_sep: self.class.defaults[:row_sep],
         col_sep: self.class.defaults[:col_sep],
         quote_char: self.class.defaults[:quote_char],
+        headers: nil,
         **opts
       )
         super(**opts)
 
-        @csv = CSV.new(
+        csv = CSV.new(
           io,
           row_sep: row_sep,
           col_sep: col_sep,
           quote_char: quote_char
         )
 
-        @headers = detect_headers(@csv)
-        @cols_count = @headers.size
+        if headers
+          init_with_headers(csv, headers)
+        else
+          init_without_headers(csv)
+        end
       end
 
       def each_header
         raise_if_closed
 
         return to_enum(:each_header) { @cols_count } unless block_given?
+        return self if @cols_count.zero?
 
         @headers.each_with_index do |header, col_idx|
           col = Sheet.int2col(col_idx + 1)
@@ -68,6 +73,7 @@ module Sheetah
         raise_if_closed
 
         return to_enum(:each_row) unless block_given?
+        return self unless @csv
 
         handle_malformed_csv do
           @csv.each.with_index(2) do |raw, row|
@@ -97,8 +103,34 @@ module Sheetah
         raise InputError
       end
 
-      def detect_headers(csv)
-        handle_malformed_csv { csv.shift } || []
+      def init_with_headers(csv, headers_data)
+        first_row_data = handle_malformed_csv { csv.shift }
+
+        if first_row_data
+          ensure_compatible_size(first_row_data.size, headers_data.size)
+
+          csv.rewind
+          @csv = csv
+        else
+          @csv = nil
+        end
+
+        @headers = headers_data
+        @cols_count = @headers.size
+      end
+
+      def init_without_headers(csv)
+        first_row_data = handle_malformed_csv { csv.shift }
+
+        if first_row_data
+          @csv = csv
+          @headers = first_row_data
+          @cols_count = @headers.size
+        else
+          @csv = nil
+          @headers = nil
+          @cols_count = 0
+        end
       end
     end
   end
