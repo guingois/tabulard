@@ -18,6 +18,8 @@ module Sheetah
       end
 
       def each_header
+        raise_if_closed
+
         return to_enum(:each_header) { @cols_count } unless block_given?
 
         @cols_count.times do |col_index|
@@ -30,6 +32,8 @@ module Sheetah
       end
 
       def each_row
+        raise_if_closed
+
         return to_enum(:each_row) unless block_given?
 
         @rows_count.times do |row_index|
@@ -45,10 +49,6 @@ module Sheetah
         end
 
         self
-      end
-
-      def close
-        # nothing to do here
       end
 
       private
