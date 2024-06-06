@@ -33,6 +33,20 @@ RSpec.describe Sheetah::Sheet, monadic_result: true do
     end
   end
 
+  describe "::InputError" do
+    subject { sheet_class::InputError }
+
+    it "exposes some kind of Sheetah::Sheet::Error" do
+      expect(subject.superclass).to be(Sheetah::Sheet::Error)
+    end
+
+    it "can become a message" do
+      error = subject.new
+
+      expect(error.to_message).to be_a(Sheetah::Messaging::Messages::InputError)
+    end
+  end
+
   describe "::Header" do
     let(:col) { double }
     let(:val) { double }
@@ -182,7 +196,7 @@ RSpec.describe Sheetah::Sheet, monadic_result: true do
       context "when an exception is raised" do
         let(:exception)   { Class.new(Exception) } # rubocop:disable Lint/InheritException
         let(:error)       { Class.new(StandardError) }
-        let(:sheet_error) { Class.new(Sheetah::Sheet::Error) }
+        let(:input_error) { Class.new(Sheetah::Sheet::InputError) }
 
         context "without yielding control" do
           it "doesn't rescue an exception" do
@@ -201,8 +215,8 @@ RSpec.describe Sheetah::Sheet, monadic_result: true do
             end.to raise_error(error)
           end
 
-          it "rescues and wraps a sheet error in a failure" do
-            allow(sheet_class).to receive(:new).and_raise(e = sheet_error.exception)
+          it "rescues and wraps an input error in a failure" do
+            allow(sheet_class).to receive(:new).and_raise(e = input_error.exception)
 
             result = sheet_class.open(foo, bar: bar)
 
@@ -233,17 +247,17 @@ RSpec.describe Sheetah::Sheet, monadic_result: true do
             expect(sheet).to have_received(:close)
           end
 
-          it "rescues and closes after a sheet error is raised" do
+          it "rescues and closes after an input error is raised" do
             sheet_class.open(foo, bar: bar) do
               expect(sheet).not_to have_received(:close)
-              raise sheet_error
+              raise input_error
             end
 
             expect(sheet).to have_received(:close)
           end
 
-          it "returns the exception, wrapped as a failure, after a sheet error is raised" do
-            e = sheet_error.exception # raise the instance directly to simplify result matching
+          it "returns the exception, wrapped as a failure, after an input error is raised" do
+            e = input_error.exception # raise the instance directly to simplify result matching
 
             result = sheet_class.open(foo, bar: bar) do
               raise e

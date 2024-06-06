@@ -9,7 +9,7 @@ module Sheetah
     class Csv
       include Sheet
 
-      class InvalidCSVError < Error
+      class InvalidCSVError < InputError
       end
 
       DEFAULTS = {

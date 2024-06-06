@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require "sheetah/messaging/messages/sheet_error"
+require "sheetah/messaging/messages/input_error"
 
-RSpec.describe Sheetah::Messaging::Messages::SheetError do
+RSpec.describe Sheetah::Messaging::Messages::InputError do
   it "has a default code" do
     expect(described_class.new).to have_attributes(code: described_class::CODE)
   end
@@ -10,7 +10,7 @@ RSpec.describe Sheetah::Messaging::Messages::SheetError do
   describe "validations" do
     let(:message) do
       described_class.new(
-        code: "sheet_error",
+        code: "input_error",
         code_data: nil,
         scope: "SHEET",
         scope_data: nil
