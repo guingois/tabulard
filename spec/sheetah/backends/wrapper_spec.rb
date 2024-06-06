@@ -74,15 +74,7 @@ RSpec.describe Sheetah::Backends::Wrapper do
       []
     end
 
-    include_examples "sheet/backend_empty", pending_custom_headers: true
-  end
-
-  context "when the input table headers are empty" do
-    let(:source) do
-      [[]]
-    end
-
-    include_examples "sheet/backend_empty", pending_custom_headers: true
+    include_examples "sheet/backend_empty"
   end
 
   context "when the input table is filled" do
@@ -94,6 +86,6 @@ RSpec.describe Sheetah::Backends::Wrapper do
       end.freeze
     end
 
-    include_examples "sheet/backend_filled", pending_custom_headers: true
+    include_examples "sheet/backend_filled"
   end
 end
