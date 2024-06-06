@@ -8,8 +8,6 @@ module Sheetah
       include Sheet
 
       def initialize(table)
-        raise Error if table.nil?
-
         @table = table
 
         if (table_size = @table.size).positive?
