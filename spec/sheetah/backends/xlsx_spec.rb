@@ -1,140 +1,119 @@
 # frozen_string_literal: true
 
 require "sheetah/backends/xlsx"
-require "support/shared/sheet_factories"
+require "support/shared/sheet/factories"
+require "support/shared/sheet/backend_empty"
+require "support/shared/sheet/backend_filled"
 
 RSpec.describe Sheetah::Backends::Xlsx do
-  include_context "sheet_factories"
+  include_context "sheet/factories"
+
+  let(:input) do
+    stub_input(source)
+  end
+
+  let(:sheet_opts) do
+    {}
+  end
 
   let(:sheet) do
-    new_sheet("xlsx/regular.xlsx")
+    described_class.new(input, **sheet_opts)
   end
 
-  def new_sheet(path)
-    described_class.new(path && fixture_path(path))
+  def stub_input(source)
+    fixture_path(source)
   end
 
-  describe "#each_header" do
-    let(:expected_headers) do
+  after do |example|
+    sheet.close unless example.metadata[:autoclose_sheet] == false
+  end
+
+  context "when the input table is nil" do
+    it "raises an error", autoclose_sheet: false do
+      expect { described_class.new(nil) }.to raise_error(Sheetah::Sheet::Error)
+    end
+  end
+
+  context "when the input table is empty" do
+    let(:source) do
+      "xlsx/empty.xlsx"
+    end
+
+    let(:source_data) do
+      []
+    end
+
+    include_examples "sheet/backend_empty"
+  end
+
+  context "when the input table is filled" do
+    let(:source) do
+      "xlsx/regular.xlsx"
+    end
+
+    let(:source_data) do
       [
-        header(value: "matricule", col: "A"),
-        header(value: "nom", col: "B"),
-        header(value: "prénom", col: "C"),
-        header(value: "date de naissance", col: "D"),
-        header(value: "email", col: "E"),
+        ["matricule", "nom", "prénom", "date de naissance", "email"],
+        ["004774", "Ytärd", "Glœuiçe", "28/04/1998", "foo@bar.com"],
+        [664_623, "Goulijambon", "Carasmine", Date.new(1976, 1, 20), "foo@bar.com"],
       ]
     end
 
-    context "with a block" do
-      it "yields each header, with its letter-based index" do
-        expect { |b| sheet.each_header(&b) }.to yield_successive_args(*expected_headers)
-      end
-
-      it "returns self" do
-        expect(sheet.each_header { double }).to be(sheet)
-      end
-    end
-
-    context "without a block" do
-      it "returns an enumerator" do
-        enum = sheet.each_header
-
-        expect(enum).to be_a(Enumerator)
-        expect(enum.size).to be(5)
-        expect(enum.to_a).to eq(expected_headers)
-      end
-    end
+    include_examples "sheet/backend_filled"
   end
 
-  describe "#each_row" do
-    let(:row1_cells) do
-      ["004774", "Ytärd", "Glœuiçe", "28/04/1998", "foo@bar.com"]
+  context "when the input table includes empty rows around the content" do
+    let(:source) do
+      "xlsx/empty_rows_around.xlsx"
     end
 
-    let(:row2_cells) do
-      [664_623, "Goulijambon", "Carasmine", Date.new(1976, 1, 20), "foo@bar.com"]
-    end
+    let(:source_data) do
+      empty_row = Array.new(5)
 
-    let(:expected_rows) do
       [
-        row(row: 1, value: cells(row1_cells, row: 1)),
-        row(row: 2, value: cells(row2_cells, row: 2)),
+        empty_row,
+        ["matricule", "nom", "prénom", "date de naissance", "email"],
+        ["004774", "Ytärd", "Glœuiçe", "28/04/1998", "foo@bar.com"],
+        [664_623, "Goulijambon", "Carasmine", Date.new(1976, 1, 20), "foo@bar.com"],
       ]
     end
 
-    context "with a block" do
-      it "yields each row, with its 1-based index" do
-        expect { |b| sheet.each_row(&b) }.to yield_successive_args(*expected_rows)
-      end
-
-      it "returns self" do
-        expect(sheet.each_row { double }).to be(sheet)
-      end
+    it "doesn't ignore the empty initial rows when detecting the headers" do
+      headers = build_headers(source_data[0])
+      expect { |b| sheet.each_header(&b) }.to yield_successive_args(*headers)
     end
 
-    context "without a block" do
-      it "returns an enumerator" do
-        enum = sheet.each_row
-
-        expect(enum).to be_a(Enumerator)
-        expect(enum.size).to be_nil
-        expect(enum.to_a).to eq(expected_rows)
-      end
+    it "ignores the empty final rows when detecting the rows" do
+      rows = build_rows(source_data[1..])
+      expect { |b| sheet.each_row(&b) }.to yield_successive_args(*rows)
     end
   end
 
-  describe "#close" do
-    it "returns nil" do
-      expect(sheet.close).to be_nil
-    end
-  end
-
-  context "when the input table is odd" do
-    shared_examples "empty_sheet" do
-      it "doesn't enumerate any header" do
-        expect { |b| sheet.each_header(&b) }.not_to yield_control
-      end
-
-      it "doesn't enumerate any row" do
-        expect { |b| sheet.each_row(&b) }.not_to yield_control
-      end
+  context "when the input table includes empty rows within the content" do
+    let(:source) do
+      "xlsx/empty_rows_within.xlsx"
     end
 
-    context "when the input table is nil" do
-      it "raises an error" do
-        expect { new_sheet(nil) }.to raise_error(Sheetah::Sheet::Error)
-      end
+    let(:source_data) do
+      empty_row = Array.new(5)
+
+      [
+        ["matricule", "nom", "prénom", "date de naissance", "email"],
+        empty_row,
+        ["004774", "Ytärd", "Glœuiçe", "28/04/1998", "foo@bar.com"],
+        empty_row,
+        [664_623, "Goulijambon", "Carasmine", Date.new(1976, 1, 20), "foo@bar.com"],
+      ]
     end
 
-    context "when the input table is empty" do
-      let(:sheet) { new_sheet("xlsx/empty.xlsx") }
-
-      include_examples "empty_sheet"
+    it "ignores them when detecting the headers" do
+      headers = build_headers(source_data[0])
+      expect { |b| sheet.each_header(&b) }.to yield_successive_args(*headers)
     end
 
-    context "when the input table includes empty lines around the content" do
-      let(:sheet) { new_sheet("xlsx/empty_lines_around.xlsx") }
-
-      it "doesn't ignore them when detecting the headers" do
-        expect { |b| sheet.each_header(&b) }.to yield_control.exactly(5).times
-        expect(sheet.each_header.map(&:value)).to all(be_nil)
-      end
-
-      it "ignores them when detecting the rows" do
-        expect { |b| sheet.each_row(&b) }.to yield_control.exactly(3).times
-      end
-    end
-
-    context "when the input table includes empty lines within the content" do
-      let(:sheet) { new_sheet("xlsx/empty_lines_within.xlsx") }
-
-      it "doesn't impact the detection of headers" do
-        expect { |b| sheet.each_header(&b) }.to yield_control.exactly(5).times
-      end
-
-      it "doesn't ignore them when detecting the rows" do
-        expect { |b| sheet.each_row(&b) }.to yield_control.exactly(4).times
-      end
+    it "doesn't ignore them when detecting the rows" do
+      rows = build_rows(source_data[1..])
+      expect { |b| sheet.each_row(&b) }.to yield_successive_args(*rows)
     end
   end
 end
