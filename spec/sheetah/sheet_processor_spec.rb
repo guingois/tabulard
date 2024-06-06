@@ -67,9 +67,9 @@ RSpec.describe Sheetah::SheetProcessor, monadic_result: true do
     processor.call(*actual_args, **actual_opts)
   end
 
-  context "when there is a sheet error" do
+  context "when there is a sheet input error" do
     let(:error) do
-      instance_double(Sheetah::Sheet::Error, to_message: message)
+      instance_double(Sheetah::Sheet::InputError, to_message: message)
     end
 
     let(:message) do

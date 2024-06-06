@@ -5,8 +5,8 @@ require_relative "../message_variant"
 module Sheetah
   module Messaging
     module Messages
-      class SheetError < MessageVariant
-        CODE = "sheet_error"
+      class InputError < MessageVariant
+        CODE = "input_error"
 
         def_validator do
           sheet

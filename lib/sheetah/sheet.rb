@@ -2,7 +2,7 @@
 
 require_relative "sheet/col_converter"
 require_relative "errors/error"
-require_relative "messaging/messages/sheet_error"
+require_relative "messaging/messages/input_error"
 require_relative "utils/monadic_result"
 
 module Sheetah
@@ -21,7 +21,7 @@ module Sheetah
 
     module ClassMethods
       def open(*args, **opts)
-        handle_sheet_error do
+        handle_input_error do
           sheet = new(*args, **opts)
           next sheet unless block_given?
 
@@ -35,16 +35,19 @@ module Sheetah
 
       private
 
-      def handle_sheet_error
+      def handle_input_error
         Utils::MonadicResult::Success.new(yield)
-      rescue Error => e
+      rescue InputError => e
         Utils::MonadicResult::Failure.new(e)
       end
     end
 
     class Error < Errors::Error
+    end
+
+    class InputError < Error
       def to_message
-        Messaging::Messages::SheetError.new
+        Messaging::Messages::InputError.new
       end
     end
 
