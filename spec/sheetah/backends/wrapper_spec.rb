@@ -69,12 +69,6 @@ RSpec.describe Sheetah::Backends::Wrapper do
     sheet.close unless example.metadata[:autoclose_sheet] == false
   end
 
-  context "when the input table is nil" do
-    it "raises an error", autoclose_sheet: false do
-      expect { described_class.new(nil) }.to raise_error(Sheetah::Sheet::Error)
-    end
-  end
-
   context "when the input table is empty" do
     let(:source) do
       []
