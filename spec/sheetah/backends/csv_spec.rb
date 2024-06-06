@@ -1,32 +1,30 @@
 # frozen_string_literal: true
 
 require "sheetah/backends/csv"
-require "support/shared/sheet_factories"
+require "support/shared/sheet/factories"
+require "support/shared/sheet/backend_empty"
+require "support/shared/sheet/backend_filled"
 require "csv"
 require "stringio"
 
 RSpec.describe Sheetah::Backends::Csv do
-  include_context "sheet_factories"
+  include_context "sheet/factories"
 
-  let(:raw_table) do
-    Array.new(4) do |row|
-      Array.new(4) do |col|
-        "(#{row},#{col})"
-      end.freeze
-    end.freeze
+  let(:input) do
+    stub_input(source)
   end
 
-  let(:raw_sheet) do
-    stub_sheet(raw_table)
+  let(:sheet_opts) do
+    {}
   end
 
   let(:sheet) do
-    described_class.new(raw_sheet)
+    described_class.new(input, **sheet_opts)
   end
 
-  def stub_sheet(table)
+  def stub_input(source)
     csv = CSV.generate do |csv_io|
-      table.each do |row|
+      source.each do |row|
         csv_io << row
       end
     end
@@ -34,15 +32,44 @@ RSpec.describe Sheetah::Backends::Csv do
     StringIO.new(csv, "r:UTF-8")
   end
 
-  def new_sheet(...)
-    described_class.new(stub_sheet(...))
+  after do |example|
+    sheet.close unless example.metadata[:autoclose_sheet] == false
+    input.close
   end
 
-  describe "#initialize" do
+  context "when the input table is empty" do
+    let(:source) do
+      []
+    end
+
+    include_examples "sheet/backend_empty"
+  end
+
+  context "when the input table headers are empty" do
+    let(:source) do
+      [[]]
+    end
+
+    include_examples "sheet/backend_empty"
+  end
+
+  context "when the input table is filled" do
+    let(:source) do
+      Array.new(4) do |row|
+        Array.new(4) do |col|
+          "(#{row},#{col})"
+        end.freeze
+      end.freeze
+    end
+
+    include_examples "sheet/backend_filled"
+  end
+
+  describe "encodings" do
     let(:utf8_path) { fixture_path("csv/utf8.csv") }
     let(:latin9_path) { fixture_path("csv/latin9.csv") }
 
-    let(:headers) do
+    let(:headers_data_utf8) do
       [
         "Matricule",
         "Nom",
@@ -56,21 +83,24 @@ RSpec.describe Sheetah::Backends::Csv do
       ]
     end
 
-    let(:sheet) { described_class.new(io) }
-    let(:sheet_headers) { sheet.each_header.map(&:value) }
+    let(:headers_data_latin9) do
+      headers_data_utf8.map { |str| str.encode(Encoding::ISO_8859_15) }
+    end
 
-    context "when the IO is opened with a correct external encoding" do
-      let(:io) do
+    let(:sheet_headers_data) { sheet.each_header.map(&:value) }
+
+    context "when the IO is opened with the correct external encoding" do
+      let(:input) do
         File.new(latin9_path, external_encoding: Encoding::ISO_8859_15)
       end
 
-      it "does not fail" do
-        expect { sheet }.not_to raise_error
+      it "does not interfere" do
+        expect(sheet_headers_data).to eq(headers_data_latin9)
       end
     end
 
     context "when the IO is opened with an incorrect external encoding" do
-      let(:io) do
+      let(:input) do
         File.new(latin9_path, external_encoding: Encoding::UTF_8)
       end
 
@@ -79,125 +109,38 @@ RSpec.describe Sheetah::Backends::Csv do
       end
     end
 
-    context "when the IO is setup with different encodings" do
-      let(:io) do
+    context "when the (correct) external encoding differs from the internal one" do
+      let(:input) do
         File.new(
-          utf8_path,
-          external_encoding: Encoding::UTF_8,
-          internal_encoding: Encoding::ISO_8859_15
+          latin9_path,
+          external_encoding: Encoding::ISO_8859_15,
+          internal_encoding: Encoding::UTF_8
         )
       end
 
       it "does not interfere" do
-        latin9_headers = headers.map { |str| str.encode(Encoding::ISO_8859_15) }
-
-        expect(sheet_headers).to eq(latin9_headers)
+        expect(sheet_headers_data).to eq(headers_data_utf8)
       end
-    end
-  end
-
-  describe "#each_header" do
-    let(:expected_headers) do
-      [
-        header(value: raw_table[0][0], col: "A"),
-        header(value: raw_table[0][1], col: "B"),
-        header(value: raw_table[0][2], col: "C"),
-        header(value: raw_table[0][3], col: "D"),
-      ]
-    end
-
-    context "with a block" do
-      it "yields each header, with its letter-based index" do
-        expect { |b| sheet.each_header(&b) }.to yield_successive_args(*expected_headers)
-      end
-
-      it "returns self" do
-        expect(sheet.each_header { double }).to be(sheet)
-      end
-    end
-
-    context "without a block" do
-      it "returns an enumerator" do
-        enum = sheet.each_header
-
-        expect(enum).to be_a(Enumerator)
-        expect(enum.size).to be(4)
-        expect(enum.to_a).to eq(expected_headers)
-      end
-    end
-  end
-
-  describe "#each_row" do
-    let(:expected_rows) do
-      [
-        row(row: 1, value: cells(raw_table[1], row: 1)),
-        row(row: 2, value: cells(raw_table[2], row: 2)),
-        row(row: 3, value: cells(raw_table[3], row: 3)),
-      ]
-    end
-
-    context "with a block" do
-      it "yields each row, with its 1-based index" do
-        expect { |b| sheet.each_row(&b) }.to yield_successive_args(*expected_rows)
-      end
-
-      it "returns self" do
-        expect(sheet.each_row { double }).to be(sheet)
-      end
-    end
-
-    context "without a block" do
-      it "returns an enumerator" do
-        enum = sheet.each_row
-
-        expect(enum).to be_a(Enumerator)
-        expect(enum.size).to be_nil
-        expect(enum.to_a).to eq(expected_rows)
-      end
-    end
-  end
-
-  describe "#close" do
-    it "returns nil" do
-      expect(sheet.close).to be_nil
-    end
-
-    it "doesn't close the underlying sheet" do
-      expect { sheet.close }.not_to change(raw_sheet, :closed?).from(false)
-    end
-  end
-
-  context "when the input table is odd" do
-    shared_examples "empty_sheet" do
-      it "doesn't enumerate any header" do
-        expect { |b| sheet.each_header(&b) }.not_to yield_control
-      end
-
-      it "doesn't enumerate any row" do
-        expect { |b| sheet.each_row(&b) }.not_to yield_control
-      end
-    end
-
-    context "when the input table is empty" do
-      let(:sheet) { new_sheet [] }
-
-      include_examples "empty_sheet"
-    end
-
-    context "when the input table headers are empty" do
-      let(:sheet) { new_sheet [[]] }
-
-      include_examples "empty_sheet"
     end
   end
 
   describe "CSV options" do
+    let(:source) { [] }
+
     it "requires a specific col_sep and quote_char, and an automatic row_sep" do
       expect(CSV).to receive(:new)
-        .with(raw_sheet, row_sep: :auto, col_sep: ",", quote_char: '"')
+        .with(input, row_sep: :auto, col_sep: ",", quote_char: '"')
         .and_call_original
 
       sheet
+    end
+  end
+
+  describe "#close" do
+    let(:source) { [] }
+
+    it "doesn't close the underlying sheet" do
+      expect { sheet.close }.not_to change(input, :closed?).from(false)
     end
   end
 end
