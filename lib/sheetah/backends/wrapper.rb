@@ -7,13 +7,13 @@ module Sheetah
     class Wrapper
       include Sheet
 
-      def initialize(table, **opts)
+      def initialize(table, headers: nil, **opts)
         super(**opts)
 
         if (table_size = table.size).positive?
-          init_with_filled_table(table, table_size: table_size)
+          init_with_filled_table(table, table_size: table_size, headers: headers)
         else
-          init_with_empty_table
+          init_with_empty_table(headers: headers)
         end
       end
 
@@ -53,11 +53,18 @@ module Sheetah
 
       private
 
-      def init_with_filled_table(table, table_size:)
+      def init_with_filled_table(table, table_size:, headers:)
         @table = table
 
-        headers_row = 0
-        @headers = table[headers_row]
+        if headers
+          ensure_compatible_size(table[0].size, headers.size)
+
+          headers_row = -1
+          @headers = headers
+        else
+          headers_row = 0
+          @headers = table[headers_row]
+        end
 
         @first_row = headers_row.succ
         @first_row_name = 2
@@ -68,9 +75,17 @@ module Sheetah
         @cols_count = @headers.size
       end
 
-      def init_with_empty_table
+      def init_with_empty_table(headers:)
         @rows_count = 0
-        @cols_count = 0
+
+        if headers
+          @headers = headers
+          @first_col = 0
+          @first_col_name = 1
+          @cols_count = headers.size
+        else
+          @cols_count = 0
+        end
       end
 
       def read_row(row_index)
