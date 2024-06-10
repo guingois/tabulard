@@ -105,7 +105,7 @@ RSpec.describe Sheetah::Backends::Csv do
       end
 
       it "fails" do
-        expect { sheet }.to raise_error(described_class::InvalidCSVError)
+        expect { sheet }.to raise_error(described_class::InputError)
       end
     end
 
