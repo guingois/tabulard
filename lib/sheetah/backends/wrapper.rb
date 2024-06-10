@@ -7,7 +7,9 @@ module Sheetah
     class Wrapper
       include Sheet
 
-      def initialize(table)
+      def initialize(table, **opts)
+        super(**opts)
+
         @table = table
 
         if (table_size = @table.size).positive?

@@ -19,7 +19,7 @@ module Sheetah
     def call(*args, **opts, &block)
       messenger = Messaging::Messenger.new
 
-      result = Backends.open(*args, **opts) do |sheet|
+      result = Backends.open(*args, **opts, messenger: messenger) do |sheet|
         process(sheet, messenger, &block)
       end
 
@@ -57,10 +57,6 @@ module Sheetah
     end
 
     def handle_result(result, messenger)
-      result.or do |failure|
-        messenger.error(failure.to_message) if failure.respond_to?(:to_message)
-      end
-
       SheetProcessorResult.new(result: result.discard, messages: messenger.messages)
     end
   end

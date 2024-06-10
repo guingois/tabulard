@@ -12,7 +12,9 @@ module Sheetah
     class Xlsx
       include Sheet
 
-      def initialize(path)
+      def initialize(path, **opts)
+        super(**opts)
+
         @roo = Roo::Excelx.new(path)
         @is_empty = worksheet.first_row.nil?
         @headers = detect_headers

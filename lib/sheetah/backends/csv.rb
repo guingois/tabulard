@@ -9,7 +9,13 @@ module Sheetah
     class Csv
       include Sheet
 
-      class InvalidCSVError < InputError
+      class InvalidCSV < Message
+        CODE = "invalid_csv"
+
+        def_validator do
+          sheet
+          nil_code_data
+        end
       end
 
       DEFAULTS = {
@@ -28,8 +34,11 @@ module Sheetah
         io,
         row_sep: self.class.defaults[:row_sep],
         col_sep: self.class.defaults[:col_sep],
-        quote_char: self.class.defaults[:quote_char]
+        quote_char: self.class.defaults[:quote_char],
+        **opts
       )
+        super(**opts)
+
         @csv = CSV.new(
           io,
           row_sep: row_sep,
@@ -81,7 +90,9 @@ module Sheetah
       def handle_malformed_csv
         yield
       rescue CSV::MalformedCSVError
-        raise InvalidCSVError
+        messenger.error(InvalidCSV.new)
+
+        raise InputError
       end
 
       def detect_headers(csv)
