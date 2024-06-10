@@ -23,7 +23,7 @@ module Sheetah
       def open(*args, **opts)
         handle_input_error do
           sheet = new(*args, **opts)
-          next sheet unless block_given?
+          next Utils::MonadicResult::Success.new(sheet) unless block_given?
 
           begin
             yield sheet
@@ -36,7 +36,7 @@ module Sheetah
       private
 
       def handle_input_error
-        Utils::MonadicResult::Success.new(yield)
+        yield
       rescue InputError => e
         Utils::MonadicResult::Failure.new(e)
       end

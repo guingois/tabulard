@@ -178,11 +178,11 @@ RSpec.describe Sheetah::Sheet, monadic_result: true do
         expect(yielded).to be(true)
       end
 
-      it "returns the value of the block, wrapped as a success" do
+      it "returns the value of the block" do
         block_result = double
         actual_block_result = sheet_class.open(foo, bar: bar) { block_result }
 
-        expect(actual_block_result).to eq(Success(block_result))
+        expect(actual_block_result).to eq(block_result)
       end
 
       it "closes after yielding" do

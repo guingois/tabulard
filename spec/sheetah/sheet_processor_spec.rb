@@ -33,15 +33,12 @@ RSpec.describe Sheetah::SheetProcessor, monadic_result: true do
     processor.call(*backend_args, backend: sheet_class, **backend_opts, &block)
   end
 
-  def stub_sheet_open_ok(success = double)
+  def stub_sheet_open_ok
     allow(sheet_class).to(
       receive(:open)
       .with(*backend_args, **backend_opts)
       .and_yield(sheet)
-      .and_return(Success(success))
     )
-
-    success
   end
 
   def stub_sheet_open_ko(failure = double)
