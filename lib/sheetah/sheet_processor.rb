@@ -16,19 +16,12 @@ module Sheetah
       @specification = specification
     end
 
-    def call(*args, **opts)
+    def call(*args, **opts, &block)
       messenger = Messaging::Messenger.new
 
-      result =
-        Backends.open(*args, **opts) do |sheet|
-          build_row_processor(sheet, messenger).bind do |row_processor|
-            sheet.each_row do |row|
-              yield row_processor.call(row)
-            end
-
-            Success()
-          end
-        end
+      result = Backends.open(*args, **opts) do |sheet|
+        process(sheet, messenger, &block)
+      end
 
       handle_result(result, messenger)
     end
@@ -50,6 +43,16 @@ module Sheetah
         row_processor = RowProcessor.new(headers: headers, messenger: messenger)
 
         Success(row_processor)
+      end
+    end
+
+    def process(sheet, messenger)
+      build_row_processor(sheet, messenger).bind do |row_processor|
+        sheet.each_row do |row|
+          yield row_processor.call(row)
+        end
+
+        Success()
       end
     end
 
