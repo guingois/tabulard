@@ -109,7 +109,7 @@ RSpec.describe Sheetah, monadic_result: true do
           code: "must_be_email",
           code_data: { value: "boudiou !".inspect },
           scope: Sheetah::Messaging::SCOPES::CELL,
-          scope_data: { row: 3, col: "B" },
+          scope_data: { row: 4, col: "B" },
           severity: Sheetah::Messaging::SEVERITIES::ERROR
         )
       )

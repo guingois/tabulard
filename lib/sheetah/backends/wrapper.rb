@@ -60,7 +60,7 @@ module Sheetah
         @headers = table[headers_row]
 
         @first_row = headers_row.succ
-        @first_row_name = 1
+        @first_row_name = 2
         @rows_count = table_size - @first_row
 
         @first_col = 0

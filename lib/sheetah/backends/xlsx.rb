@@ -118,7 +118,7 @@ module Sheetah
           offset = first_row - 1
 
           @first_row = first_row
-          @first_name = 1
+          @first_name = first_row
           @count = last_row - offset
         end
       end
@@ -128,7 +128,7 @@ module Sheetah
           cols_offset = first_col - 1
 
           @first_col = first_col
-          @first_name = 1
+          @first_name = first_col
           @count = last_col - cols_offset
         end
 
