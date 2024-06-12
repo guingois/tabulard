@@ -16,10 +16,14 @@ module Sheetah
         super(**opts)
 
         @roo = Roo::Excelx.new(path)
-        @worksheet = @roo.sheet_for(@roo.default_sheet)
-        @is_empty = @worksheet.first_row.nil?
-        @headers = detect_headers
-        @cols_count = @headers.size
+
+        worksheet = @roo.sheet_for(@roo.default_sheet)
+
+        if worksheet.first_row
+          init_with_filled_table(worksheet)
+        else
+          init_with_empty_table
+        end
       end
 
       def each_header
@@ -27,36 +31,36 @@ module Sheetah
 
         return to_enum(:each_header) { @cols_count } unless block_given?
 
-        @headers.each_with_index do |header, col_idx|
-          col = Sheet.int2col(col_idx + 1)
+        @cols_count.times do |col_index|
+          col = @cols.name(col_index)
 
-          yield Header.new(col: col, value: header)
+          cell_coords = [@rows.headers_coord, @cols.coord(col_index)]
+          cell_value = @cells[cell_coords]&.value
+
+          yield Header.new(col: col, value: cell_value)
         end
 
         self
       end
 
-      def each_row # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      def each_row
         raise_if_closed
 
         return to_enum(:each_row) unless block_given?
-        return self if @is_empty
 
-        first_row = @worksheet.first_row + 1
-        last_row = @worksheet.last_row
-        row = 0
+        @rows_count.times do |row_index|
+          row = @rows.name(row_index)
 
-        first_row.upto(last_row) do |cursor|
-          raw = @worksheet.row(cursor)
-          row += 1
+          row_value = Array.new(@cols_count) do |col_index|
+            col = @cols.name(col_index)
 
-          value = Array.new(@cols_count) do |col_idx|
-            col = Sheet.int2col(col_idx + 1)
+            cell_coords = [@rows.coord(row_index), @cols.coord(col_index)]
+            cell_value = @cells[cell_coords]&.value
 
-            Cell.new(row: row, col: col, value: raw[col_idx])
+            Cell.new(row: row, col: col, value: cell_value)
           end
 
-          yield Row.new(row: row, value: value)
+          yield Row.new(row: row, value: row_value)
         end
 
         self
@@ -70,10 +74,73 @@ module Sheetah
 
       private
 
-      def detect_headers
-        return [] if @is_empty
+      def init_with_filled_table(worksheet)
+        @rows = Rows.new(
+          first_row: worksheet.first_row,
+          last_row: worksheet.last_row
+        )
 
-        @worksheet.row(@worksheet.first_row) || []
+        @cols = Cols.new(
+          first_col: worksheet.first_column,
+          last_col: worksheet.last_column
+        )
+
+        @rows_count = @rows.count
+        @cols_count = @cols.count
+
+        @cells = worksheet.cells
+      end
+
+      def init_with_empty_table
+        @rows_count = 0
+        @cols_count = 0
+      end
+
+      class Rows
+        def initialize(first_row:, last_row:)
+          @headers_coord = first_row
+          init(first_row.succ, last_row)
+        end
+
+        attr_reader :count, :headers_coord
+
+        def name(row)
+          @first_name + row
+        end
+
+        def coord(row)
+          @first_row + row
+        end
+
+        private
+
+        def init(first_row, last_row)
+          offset = first_row - 1
+
+          @first_row = first_row
+          @first_name = 1
+          @count = last_row - offset
+        end
+      end
+
+      class Cols
+        def initialize(first_col:, last_col:)
+          cols_offset = first_col - 1
+
+          @first_col = first_col
+          @first_name = 1
+          @count = last_col - cols_offset
+        end
+
+        attr_reader :count
+
+        def name(col)
+          Sheet.int2col(@first_name + col)
+        end
+
+        def coord(col)
+          @first_col + col
+        end
       end
     end
   end
