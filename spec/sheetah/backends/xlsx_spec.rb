@@ -37,7 +37,7 @@ RSpec.describe Sheetah::Backends::Xlsx do
       []
     end
 
-    include_examples "sheet/backend_empty", pending_custom_headers: true
+    include_examples "sheet/backend_empty"
   end
 
   context "when the input table is filled" do
@@ -53,7 +53,7 @@ RSpec.describe Sheetah::Backends::Xlsx do
       ]
     end
 
-    include_examples "sheet/backend_filled", pending_custom_headers: true
+    include_examples "sheet/backend_filled"
   end
 
   context "when the input table includes empty rows around the content" do
