@@ -31,7 +31,7 @@ RSpec.shared_context "sheet/factories" do
     end
   end
 
-  def build_rows(list_of_values, row: 1, col: "A")
+  def build_rows(list_of_values, row: 2, col: "A")
     list_of_values.map.with_index(row) do |values, row_index|
       value = build_cells(values, row: row_index, col: col)
 
