@@ -33,12 +33,12 @@ module Sheetah
         self
       end
 
-      def each_row
+      def each_row # rubocop:disable Metrics/AbcSize
         return to_enum(:each_row) unless block_given?
 
         return self if @is_empty
 
-        first_row = 2
+        first_row = worksheet.first_row + 1
         last_row = worksheet.last_row
         row = 0
 
@@ -73,7 +73,7 @@ module Sheetah
       def detect_headers
         return [] if @is_empty
 
-        worksheet.row(1) || []
+        worksheet.row(worksheet.first_row) || []
       end
     end
   end

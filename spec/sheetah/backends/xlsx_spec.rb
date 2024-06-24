@@ -119,13 +119,13 @@ RSpec.describe Sheetah::Backends::Xlsx do
     context "when the input table includes empty lines around the content" do
       let(:sheet) { new_sheet("xlsx/empty_lines_around.xlsx") }
 
-      it "doesn't ignore them when detecting the headers" do
+      it "ignores them when detecting the headers" do
         expect { |b| sheet.each_header(&b) }.to yield_control.exactly(5).times
-        expect(sheet.each_header.map(&:value)).to all(be_nil)
+        expect(sheet.each_header.map(&:value)).not_to include(be_nil)
       end
 
       it "ignores them when detecting the rows" do
-        expect { |b| sheet.each_row(&b) }.to yield_control.exactly(3).times
+        expect { |b| sheet.each_row(&b) }.to yield_control.exactly(2).times
       end
     end
 
@@ -139,6 +139,21 @@ RSpec.describe Sheetah::Backends::Xlsx do
       it "doesn't ignore them when detecting the rows" do
         expect { |b| sheet.each_row(&b) }.to yield_control.exactly(4).times
       end
+    end
+  end
+
+  context "when the input table includes empty columns before the content" do
+    let(:sheet) do
+      new_sheet("xlsx/empty_cols_before.xlsx")
+    end
+
+    it "ignores the initial empty columns when detecting the headers" do
+      expect { |b| sheet.each_header(&b) }.to yield_control.exactly(5).times
+    end
+
+    it "ignores the initial empty columns when detecting the rows" do
+      rows = sheet.each_row.to_a
+      expect(rows).to all(have_attributes(value: have_attributes(size: 5)))
     end
   end
 end
