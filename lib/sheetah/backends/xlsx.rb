@@ -36,7 +36,7 @@ module Sheetah
       def each_row
         return to_enum(:each_row) unless block_given?
 
-        return if @is_empty
+        return self if @is_empty
 
         first_row = 2
         last_row = worksheet.last_row

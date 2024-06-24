@@ -98,6 +98,10 @@ RSpec.describe Sheetah::Backends::Xlsx do
       it "doesn't enumerate any row" do
         expect { |b| sheet.each_row(&b) }.not_to yield_control
       end
+
+      it "returns self from #each_row" do
+        expect(sheet.each_row { double }).to be(sheet)
+      end
     end
 
     context "when the input table is nil" do
