@@ -2,7 +2,7 @@
 
 require "sheetah/sheet"
 
-RSpec.shared_examples "sheet/backend_filled" do |pending_custom_headers: false|
+RSpec.shared_examples "sheet/backend_filled" do
   unless instance_methods.include?(:source_data)
     alias_method :source_data, :source
   end
@@ -77,7 +77,7 @@ RSpec.shared_examples "sheet/backend_filled" do |pending_custom_headers: false|
     end
   end
 
-  context "when headers are customized", pending: pending_custom_headers do
+  context "when headers are customized" do
     let(:data_size) { source_data[0].size }
     let(:headers_size) { data_size + diff }
 
