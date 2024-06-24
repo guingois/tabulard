@@ -2,7 +2,7 @@
 
 require "sheetah/sheet"
 
-RSpec.shared_examples "sheet/backend_filled" do
+RSpec.shared_examples "sheet/backend_filled" do |sized_rows_enum: false|
   unless instance_methods.include?(:source_data)
     alias_method :source_data, :source
   end
@@ -53,7 +53,7 @@ RSpec.shared_examples "sheet/backend_filled" do
         enum = sheet.each_row
 
         expect(enum).to be_a(Enumerator)
-        expect(enum.size).to be_nil
+        expect(enum.size).to eq(sized_rows_enum ? rows.size : nil)
         expect(enum.to_a).to eq(rows)
       end
     end
