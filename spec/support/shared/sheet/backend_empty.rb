@@ -2,7 +2,7 @@
 
 require "sheetah/sheet"
 
-RSpec.shared_examples "sheet/backend_empty" do
+RSpec.shared_examples "sheet/backend_empty" do |pending_custom_headers: false|
   describe "#each_header" do
     context "with a block" do
       it "doesn't yield" do
@@ -62,6 +62,21 @@ RSpec.shared_examples "sheet/backend_empty" do
 
     it "can't enumerate rows" do
       expect { sheet.each_row }.to raise_error(Sheetah::Sheet::ClosureError)
+    end
+  end
+
+  context "when headers are customized", pending: pending_custom_headers do
+    let(:headers_data) do
+      %w[foo bar baz]
+    end
+
+    let(:sheet_opts) do
+      super().merge(headers: headers_data)
+    end
+
+    it "relies on the custom headers" do
+      headers = build_headers(headers_data)
+      expect { |b| sheet.each_header(&b) }.to yield_successive_args(*headers)
     end
   end
 end
