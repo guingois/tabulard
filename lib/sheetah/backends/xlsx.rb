@@ -72,7 +72,7 @@ module Sheetah
 
       def init_with_filled_table(worksheet)
         @rows = Rows.new(
-          first_row: 1,
+          first_row: worksheet.first_row,
           last_row: worksheet.last_row
         )
 

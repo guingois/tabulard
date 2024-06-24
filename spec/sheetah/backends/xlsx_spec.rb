@@ -68,17 +68,14 @@ RSpec.describe Sheetah::Backends::Xlsx do
     end
 
     let(:source_data) do
-      empty_row = Array.new(5)
-
       [
-        empty_row,
         ["matricule", "nom", "prénom", "date de naissance", "email"],
         ["004774", "Ytärd", "Glœuiçe", "28/04/1998", "foo@bar.com"],
         [664_623, "Goulijambon", "Carasmine", Date.new(1976, 1, 20), "foo@bar.com"],
       ]
     end
 
-    it "doesn't ignore the empty initial rows when detecting the headers" do
+    it "ignores the empty initial rows when detecting the headers" do
       headers = build_headers(source_data[0])
       expect { |b| sheet.each_header(&b) }.to yield_successive_args(*headers)
     end
@@ -112,6 +109,30 @@ RSpec.describe Sheetah::Backends::Xlsx do
     end
 
     it "doesn't ignore them when detecting the rows" do
+      rows = build_rows(source_data[1..])
+      expect { |b| sheet.each_row(&b) }.to yield_successive_args(*rows)
+    end
+  end
+
+  context "when the input table includes empty columns before the content" do
+    let(:source) do
+      "xlsx/empty_cols_before.xlsx"
+    end
+
+    let(:source_data) do
+      [
+        ["matricule", "nom", "prénom", "date de naissance", "email"],
+        ["004774", "Ytärd", "Glœuiçe", "28/04/1998", "foo@bar.com"],
+        [664_623, "Goulijambon", "Carasmine", Date.new(1976, 1, 20), "foo@bar.com"],
+      ]
+    end
+
+    it "ignores the initial empty columns when detecting the headers" do
+      headers = build_headers(source_data[0])
+      expect { |b| sheet.each_header(&b) }.to yield_successive_args(*headers)
+    end
+
+    it "ignores the initial empty columns when detecting the rows" do
       rows = build_rows(source_data[1..])
       expect { |b| sheet.each_row(&b) }.to yield_successive_args(*rows)
     end
