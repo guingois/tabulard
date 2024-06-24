@@ -2,7 +2,7 @@
 
 require "sheetah/sheet"
 
-RSpec.shared_examples "sheet/backend_empty" do |pending_custom_headers: false|
+RSpec.shared_examples "sheet/backend_empty" do
   describe "#each_header" do
     context "with a block" do
       it "doesn't yield" do
@@ -65,7 +65,7 @@ RSpec.shared_examples "sheet/backend_empty" do |pending_custom_headers: false|
     end
   end
 
-  context "when headers are customized", pending: pending_custom_headers do
+  context "when headers are customized" do
     let(:headers_data) do
       %w[foo bar baz]
     end
