@@ -81,7 +81,7 @@ RSpec.describe Sheetah::Backends::Xlsx do
     end
 
     it "ignores the empty final rows when detecting the rows" do
-      rows = build_rows(source_data[1..])
+      rows = build_rows(source_data[1..], row: 3)
       expect { |b| sheet.each_row(&b) }.to yield_successive_args(*rows)
     end
   end
@@ -128,12 +128,12 @@ RSpec.describe Sheetah::Backends::Xlsx do
     end
 
     it "ignores the initial empty columns when detecting the headers" do
-      headers = build_headers(source_data[0])
+      headers = build_headers(source_data[0], col: "B")
       expect { |b| sheet.each_header(&b) }.to yield_successive_args(*headers)
     end
 
     it "ignores the initial empty columns when detecting the rows" do
-      rows = build_rows(source_data[1..])
+      rows = build_rows(source_data[1..], col: "B")
       expect { |b| sheet.each_row(&b) }.to yield_successive_args(*rows)
     end
   end

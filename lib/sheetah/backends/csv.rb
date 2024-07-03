@@ -57,7 +57,7 @@ module Sheetah
         return to_enum(:each_row) unless block_given?
 
         handle_malformed_csv do
-          @csv.each.with_index(1) do |raw, row|
+          @csv.each.with_index(2) do |raw, row|
             value = Array.new(@cols_count) do |col_idx|
               col = Sheet.int2col(col_idx + 1)
 
