@@ -13,8 +13,6 @@ module Sheetah
       include Sheet
 
       def initialize(path)
-        raise Error if path.nil?
-
         @roo = Roo::Excelx.new(path)
 
         worksheet = @roo.sheet_for(@roo.default_sheet)
