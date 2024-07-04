@@ -12,6 +12,10 @@ RSpec.describe Sheetah::SheetProcessor, monadic_result: true do
     described_class.new(specification)
   end
 
+  let(:messenger) do
+    instance_double(Sheetah::Messaging::Messenger, messages: double)
+  end
+
   let(:sheet_class) do
     Class.new { include Sheetah::Sheet }
   end
@@ -33,30 +37,27 @@ RSpec.describe Sheetah::SheetProcessor, monadic_result: true do
     processor.call(*backend_args, backend: sheet_class, **backend_opts, &block)
   end
 
-  def stub_sheet_open_ok(success = double)
-    allow(sheet_class).to(
-      receive(:open)
-      .with(*backend_args, **backend_opts)
-      .and_yield(sheet)
-      .and_return(Success(success))
-    )
-
-    success
+  def stub_sheet_open
+    stub = receive(:open).with(*backend_args, **backend_opts, messenger: messenger)
+    stub = yield(stub) if block_given?
+    allow(sheet_class).to(stub)
   end
 
-  def stub_sheet_open_ko(failure = double)
-    allow(sheet_class).to(
-      receive(:open)
-      .with(*backend_args, **backend_opts)
-      .and_return(Failure(failure))
-    )
+  def stub_sheet_open_ok
+    stub_sheet_open { _1.and_yield(sheet) }
+  end
 
-    failure
+  def stub_sheet_open_ko
+    stub_sheet_open { _1.and_return(Failure()) }
+  end
+
+  before do
+    allow(Sheetah::Messaging::Messenger).to receive(:new).with(no_args).and_return(messenger)
   end
 
   it "passes the args and opts to Backends.open" do
     actual_args = backend_args
-    actual_opts = backend_opts.merge(backend: sheet_class)
+    actual_opts = backend_opts.merge(backend: sheet_class, messenger: messenger)
 
     expect(Sheetah::Backends).to(
       receive(:open)
@@ -67,32 +68,16 @@ RSpec.describe Sheetah::SheetProcessor, monadic_result: true do
     processor.call(*actual_args, **actual_opts)
   end
 
-  context "when there is a sheet error" do
-    let(:error) do
-      instance_double(Sheetah::Sheet::Error, to_message: message)
-    end
-
-    let(:message) do
-      Sheetah::Messaging::Message.new(code: double, code_data: double)
-    end
-
+  context "when opening the sheet fails" do
     before do
-      stub_sheet_open_ko(error)
+      stub_sheet_open_ko
     end
 
     it "is an empty failure, with messages" do
       expect(call).to eq(
         Sheetah::SheetProcessorResult.new(
           result: Failure(),
-          messages: [
-            Sheetah::Messaging::Message.new(
-              code: message.code,
-              code_data: message.code_data,
-              scope: "SHEET",
-              scope_data: nil,
-              severity: "ERROR"
-            ),
-          ]
+          messages: messenger.messages
         )
       )
     end
@@ -113,14 +98,6 @@ RSpec.describe Sheetah::SheetProcessor, monadic_result: true do
 
     let(:headers) do
       instance_double(Sheetah::Headers)
-    end
-
-    def stub_messenger
-      allow(Sheetah::Messaging::Messenger).to(
-        receive(:new)
-        .with(no_args)
-        .and_return(messenger)
-      )
     end
 
     def stub_enumeration(obj, method_name, enumerable)
@@ -151,7 +128,6 @@ RSpec.describe Sheetah::SheetProcessor, monadic_result: true do
     end
 
     before do
-      stub_messenger
       stub_headers
 
       stub_sheet_open_ok

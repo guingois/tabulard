@@ -2,7 +2,8 @@
 
 require_relative "sheet/col_converter"
 require_relative "errors/error"
-require_relative "messaging/messages/sheet_error"
+require_relative "messaging/messenger"
+require_relative "messaging/message_variant"
 require_relative "utils/monadic_result"
 
 module Sheetah
@@ -21,32 +22,26 @@ module Sheetah
 
     module ClassMethods
       def open(*args, **opts)
-        handle_sheet_error do
-          sheet = new(*args, **opts)
-          next sheet unless block_given?
+        sheet = new(*args, **opts)
+        return Utils::MonadicResult::Success.new(sheet) unless block_given?
 
-          begin
-            yield sheet
-          ensure
-            sheet.close
-          end
+        begin
+          yield sheet
+        ensure
+          sheet.close
         end
-      end
-
-      private
-
-      def handle_sheet_error
-        Utils::MonadicResult::Success.new(yield)
-      rescue Error => e
-        Utils::MonadicResult::Failure.new(e)
+      rescue InputError
+        Utils::MonadicResult::Failure.new
       end
     end
 
     class Error < Errors::Error
-      def to_message
-        Messaging::Messages::SheetError.new
-      end
     end
+
+    class InputError < Error
+    end
+
+    Message = Messaging::MessageVariant
 
     class Header
       def initialize(col:, value:)
@@ -91,6 +86,12 @@ module Sheetah
         other.is_a?(self.class) && row == other.row && col == other.col && value == other.value
       end
     end
+
+    def initialize(messenger: Messaging::Messenger.new)
+      @messenger = messenger
+    end
+
+    attr_reader :messenger
 
     def each_header
       raise NoMethodError, "You must implement #{self.class}#each_header => self"
