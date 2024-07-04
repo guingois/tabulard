@@ -34,7 +34,7 @@ module Sheetah
       def each_row
         raise_if_closed
 
-        return to_enum(:each_row) unless block_given?
+        return to_enum(:each_row) { @rows_count } unless block_given?
 
         @rows_count.times do |row_index|
           row, row_data = read_row(row_index)

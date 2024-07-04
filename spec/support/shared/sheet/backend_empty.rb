@@ -2,7 +2,7 @@
 
 require "sheetah/sheet"
 
-RSpec.shared_examples "sheet/backend_empty" do
+RSpec.shared_examples "sheet/backend_empty" do |sized_rows_enum: false|
   describe "#each_header" do
     context "with a block" do
       it "doesn't yield" do
@@ -41,7 +41,7 @@ RSpec.shared_examples "sheet/backend_empty" do
         enum = sheet.each_row
 
         expect(enum).to be_a(Enumerator)
-        expect(enum.size).to be_nil
+        expect(enum.size).to eq(sized_rows_enum ? 0 : nil)
         expect(enum.to_a).to eq([])
       end
     end

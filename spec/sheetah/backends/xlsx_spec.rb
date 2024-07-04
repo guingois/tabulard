@@ -37,7 +37,7 @@ RSpec.describe Sheetah::Backends::Xlsx do
       []
     end
 
-    include_examples "sheet/backend_empty"
+    include_examples "sheet/backend_empty", sized_rows_enum: true
   end
 
   context "when the input table is filled" do
@@ -53,7 +53,7 @@ RSpec.describe Sheetah::Backends::Xlsx do
       ]
     end
 
-    include_examples "sheet/backend_filled"
+    include_examples "sheet/backend_filled", sized_rows_enum: true
   end
 
   context "when the input table includes empty rows around the content" do
