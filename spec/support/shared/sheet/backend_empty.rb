@@ -64,4 +64,19 @@ RSpec.shared_examples "sheet/backend_empty" do
       expect { sheet.each_row }.to raise_error(Sheetah::Sheet::ClosureError)
     end
   end
+
+  context "when headers are customized" do
+    let(:headers_data) do
+      %w[foo bar baz]
+    end
+
+    let(:sheet_opts) do
+      super().merge(headers: headers_data)
+    end
+
+    it "relies on the custom headers" do
+      headers = build_headers(headers_data)
+      expect { |b| sheet.each_header(&b) }.to yield_successive_args(*headers)
+    end
+  end
 end

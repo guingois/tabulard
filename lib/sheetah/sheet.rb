@@ -41,6 +41,12 @@ module Sheetah
     class ClosureError < Error
     end
 
+    class TooFewHeaders < Error
+    end
+
+    class TooManyHeaders < Error
+    end
+
     class InputError < Error
     end
 
@@ -125,6 +131,15 @@ module Sheetah
 
     def raise_if_closed
       raise ClosureError if closed?
+    end
+
+    def ensure_compatible_size(row_size, headers_size)
+      case row_size <=> headers_size
+      when -1
+        raise TooManyHeaders, "Expected #{row_size} headers, got: #{headers_size}"
+      when 1
+        raise TooFewHeaders, "Expected #{row_size} headers, got: #{headers_size}"
+      end
     end
   end
 end

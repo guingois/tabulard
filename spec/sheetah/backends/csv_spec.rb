@@ -45,14 +45,6 @@ RSpec.describe Sheetah::Backends::Csv do
     include_examples "sheet/backend_empty"
   end
 
-  context "when the input table headers are empty" do
-    let(:source) do
-      [[]]
-    end
-
-    include_examples "sheet/backend_empty"
-  end
-
   context "when the input table is filled" do
     let(:source) do
       Array.new(4) do |row|

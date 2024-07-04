@@ -76,4 +76,53 @@ RSpec.shared_examples "sheet/backend_filled" do
       expect { sheet.each_row }.to raise_error(Sheetah::Sheet::ClosureError)
     end
   end
+
+  context "when headers are customized" do
+    let(:data_size) { source_data[0].size }
+    let(:headers_size) { data_size + diff }
+
+    let(:headers_data) do
+      Array.new(headers_size) { |i| "header#{i}" }
+    end
+
+    let(:sheet_opts) do
+      super().merge(headers: headers_data)
+    end
+
+    context "when their size is equal to the size of the data" do
+      let(:diff) { 0 }
+
+      it "relies on the custom headers" do
+        headers = build_headers(headers_data)
+        expect { |b| sheet.each_header(&b) }.to yield_successive_args(*headers)
+      end
+
+      it "treats all rows as data" do
+        rows = build_rows(source_data, row: 1)
+        expect { |b| sheet.each_row(&b) }.to yield_successive_args(*rows)
+      end
+    end
+
+    context "when their size is smaller than the size of the data" do
+      let(:diff) { -1 }
+
+      it "fails to initialize", autoclose_sheet: false do
+        expect { sheet }.to raise_error(
+          Sheetah::Sheet::TooFewHeaders,
+          "Expected #{data_size} headers, got: #{headers_size}"
+        )
+      end
+    end
+
+    context "when their size is larger than the size of the data" do
+      let(:diff) { 1 }
+
+      it "fails to initialize", autoclose_sheet: false do
+        expect { sheet }.to raise_error(
+          Sheetah::Sheet::TooManyHeaders,
+          "Expected #{data_size} headers, got: #{headers_size}"
+        )
+      end
+    end
+  end
 end
