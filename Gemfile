@@ -24,8 +24,12 @@ gem "rubocop-rspec", "~> 2.30"
 # A Ruby documentation tool
 gem "yard", "~> 0.9.36"
 
+# An optional library, used to parse CSV documents when needed
+gem "csv", "~> 3.3"
+
 # An optional library, used to parse XLSX documents when needed
 gem "roo", "~> 2.10"
+gem "base64", "~> 0.2.0" # Dependency of Roo, missing for MRI 3.4+ # rubocop:disable Bundler/OrderedGems
 
 # Manage environment variables within spec examples
 gem "climate_control", "~> 1.2"
