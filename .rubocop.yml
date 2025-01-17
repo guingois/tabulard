@@ -1,7 +1,7 @@
 # See the documentation here: https://docs.rubocop.org/
 # Please keep the list of cops in alphabetical order.
 
-require:
+plugins:
   - rubocop-performance
   - rubocop-rspec
 

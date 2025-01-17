@@ -17,12 +17,12 @@ gem "simplecov", "~> 0.22.0"
 gem "simplecov-cobertura", "~> 2.1"
 
 # A Ruby static code analyzer and formatter
-gem "rubocop", "~> 1.64"
-gem "rubocop-performance", "~> 1.21"
-gem "rubocop-rspec", "~> 2.30"
+gem "rubocop", "~> 1.74"
+gem "rubocop-performance", "~> 1.24"
+gem "rubocop-rspec", "~> 3.5"
 
 # A Ruby documentation tool
-gem "yard", "~> 0.9.36"
+gem "yard", "~> 0.9.37"
 
 # An optional library, used to parse CSV documents when needed
 gem "csv", "~> 3.3"
