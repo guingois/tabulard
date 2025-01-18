@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require "tabulard/backends/csv"
+require "tabulard/adapters/csv"
 
-RSpec.describe Tabulard::Backends::Csv::InvalidCSV do
+RSpec.describe Tabulard::Adapters::Csv::InvalidCSV do
   it "has a default code" do
     expect(described_class.new).to have_attributes(code: described_class::CODE)
   end

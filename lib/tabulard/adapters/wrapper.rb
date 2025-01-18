@@ -3,7 +3,7 @@
 require_relative "../table"
 
 module Tabulard
-  module Backends
+  module Adapters
     class Wrapper
       include Table
 

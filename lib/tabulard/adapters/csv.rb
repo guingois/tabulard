@@ -5,7 +5,7 @@ require "csv"
 require_relative "../table"
 
 module Tabulard
-  module Backends
+  module Adapters
     class Csv
       include Table
 
@@ -90,7 +90,7 @@ module Tabulard
         self
       end
 
-      # The backend isn't responsible for opening the IO, and therefore it is not responsible for
+      # The adapter isn't responsible for opening the IO, and therefore it is not responsible for
       # closing it either.
 
       private

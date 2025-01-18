@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "backends"
+require_relative "adapters"
 require_relative "headers"
 require_relative "messaging"
 require_relative "row_processor"
@@ -19,7 +19,7 @@ module Tabulard
     def call(*args, **opts, &block)
       messenger = Messaging::Messenger.new
 
-      result = Backends.open(*args, **opts, messenger: messenger) do |table|
+      result = Adapters.open(*args, **opts, messenger: messenger) do |table|
         process(table, messenger, &block)
       end
 
