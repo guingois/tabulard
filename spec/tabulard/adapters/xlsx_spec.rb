@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require "tabulard/backends/xlsx"
+require "tabulard/adapters/xlsx"
 require "support/shared/table/factories"
-require "support/shared/table/backend_empty"
-require "support/shared/table/backend_filled"
+require "support/shared/table/empty"
+require "support/shared/table/filled"
 
-RSpec.describe Tabulard::Backends::Xlsx do
+RSpec.describe Tabulard::Adapters::Xlsx do
   include_context "table/factories"
 
   let(:input) do
@@ -37,7 +37,7 @@ RSpec.describe Tabulard::Backends::Xlsx do
       []
     end
 
-    include_examples "table/backend_empty", sized_rows_enum: true
+    include_examples "table/empty", sized_rows_enum: true
   end
 
   context "when the input table is filled" do
@@ -53,7 +53,7 @@ RSpec.describe Tabulard::Backends::Xlsx do
       ]
     end
 
-    include_examples "table/backend_filled", sized_rows_enum: true
+    include_examples "table/filled", sized_rows_enum: true
   end
 
   context "when the input table includes empty rows around the content" do

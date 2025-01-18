@@ -8,7 +8,7 @@ require "roo"
 require_relative "../table"
 
 module Tabulard
-  module Backends
+  module Adapters
     class Xlsx
       include Table
 

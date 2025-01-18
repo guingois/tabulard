@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require "tabulard/backends/wrapper"
+require "tabulard/adapters/wrapper"
 require "support/shared/table/factories"
-require "support/shared/table/backend_empty"
-require "support/shared/table/backend_filled"
+require "support/shared/table/empty"
+require "support/shared/table/filled"
 
-RSpec.describe Tabulard::Backends::Wrapper do
+RSpec.describe Tabulard::Adapters::Wrapper do
   include_context "table/factories"
 
   let(:table_interface) do
@@ -74,7 +74,7 @@ RSpec.describe Tabulard::Backends::Wrapper do
       []
     end
 
-    include_examples "table/backend_empty", sized_rows_enum: true
+    include_examples "table/empty", sized_rows_enum: true
   end
 
   context "when the input table is filled" do
@@ -86,6 +86,6 @@ RSpec.describe Tabulard::Backends::Wrapper do
       end.freeze
     end
 
-    include_examples "table/backend_filled", sized_rows_enum: true
+    include_examples "table/filled", sized_rows_enum: true
   end
 end

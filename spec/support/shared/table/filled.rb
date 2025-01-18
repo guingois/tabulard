@@ -2,7 +2,7 @@
 
 require "tabulard/table"
 
-RSpec.shared_examples "table/backend_filled" do |sized_rows_enum: false|
+RSpec.shared_examples "table/filled" do |sized_rows_enum: false|
   unless instance_methods.include?(:source_data)
     alias_method :source_data, :source
   end

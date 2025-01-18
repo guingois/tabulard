@@ -20,11 +20,11 @@ RSpec.describe Tabulard::TableProcessor, monadic_result: true do
     Class.new { include Tabulard::Table }
   end
 
-  let(:backend_args) do
+  let(:adapter_args) do
     [double, double]
   end
 
-  let(:backend_opts) do
+  let(:adapter_opts) do
     { foo: double, bar: double }
   end
 
@@ -34,11 +34,11 @@ RSpec.describe Tabulard::TableProcessor, monadic_result: true do
 
   def call(&block)
     block ||= proc {} # stub a dummy proc
-    processor.call(*backend_args, backend: table_class, **backend_opts, &block)
+    processor.call(*adapter_args, adapter: table_class, **adapter_opts, &block)
   end
 
   def stub_table_open
-    stub = receive(:open).with(*backend_args, **backend_opts, messenger: messenger)
+    stub = receive(:open).with(*adapter_args, **adapter_opts, messenger: messenger)
     stub = yield(stub) if block_given?
     allow(table_class).to(stub)
   end
@@ -55,11 +55,11 @@ RSpec.describe Tabulard::TableProcessor, monadic_result: true do
     allow(Tabulard::Messaging::Messenger).to receive(:new).with(no_args).and_return(messenger)
   end
 
-  it "passes the args and opts to Backends.open" do
-    actual_args = backend_args
-    actual_opts = backend_opts.merge(backend: table_class, messenger: messenger)
+  it "passes the args and opts to Adapters.open" do
+    actual_args = adapter_args
+    actual_opts = adapter_opts.merge(adapter: table_class, messenger: messenger)
 
-    expect(Tabulard::Backends).to(
+    expect(Tabulard::Adapters).to(
       receive(:open)
       .with(*actual_args, **actual_opts)
       .and_return(Success())

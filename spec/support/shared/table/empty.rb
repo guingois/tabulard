@@ -2,7 +2,7 @@
 
 require "tabulard/table"
 
-RSpec.shared_examples "table/backend_empty" do |sized_rows_enum: false|
+RSpec.shared_examples "table/empty" do |sized_rows_enum: false|
   describe "#each_header" do
     context "with a block" do
       it "doesn't yield" do

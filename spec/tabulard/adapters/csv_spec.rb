@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require "tabulard/backends/csv"
+require "tabulard/adapters/csv"
 require "support/shared/table/factories"
-require "support/shared/table/backend_empty"
-require "support/shared/table/backend_filled"
+require "support/shared/table/empty"
+require "support/shared/table/filled"
 require "csv"
 require "stringio"
 
-RSpec.describe Tabulard::Backends::Csv do
+RSpec.describe Tabulard::Adapters::Csv do
   include_context "table/factories"
 
   let(:input) do
@@ -42,7 +42,7 @@ RSpec.describe Tabulard::Backends::Csv do
       []
     end
 
-    include_examples "table/backend_empty"
+    include_examples "table/empty"
   end
 
   context "when the input table is filled" do
@@ -54,7 +54,7 @@ RSpec.describe Tabulard::Backends::Csv do
       end.freeze
     end
 
-    include_examples "table/backend_filled"
+    include_examples "table/filled"
   end
 
   describe "encodings" do
