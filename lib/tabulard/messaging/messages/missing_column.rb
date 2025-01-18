@@ -9,7 +9,7 @@ module Tabulard
         CODE = "missing_column"
 
         def_validator do
-          sheet
+          table
 
           def validate_code_data(message)
             message.code_data in { value: String }

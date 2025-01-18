@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require "tabulard/sheet"
+require "tabulard/table"
 
-RSpec.describe Tabulard::Sheet, monadic_result: true do
-  let(:sheet_class) do
+RSpec.describe Tabulard::Table, monadic_result: true do
+  let(:table_class) do
     c = Class.new do
       def initialize(foo, bar:)
         @foo = foo
@@ -13,20 +13,20 @@ RSpec.describe Tabulard::Sheet, monadic_result: true do
 
     c.include(described_class)
 
-    stub_const("SheetClass", c)
+    stub_const("TableClass", c)
 
     c
   end
 
-  let(:sheet) do
-    sheet_class.new(foo, bar: bar)
+  let(:table) do
+    table_class.new(foo, bar: bar)
   end
 
   let(:foo) { double }
   let(:bar) { double }
 
   describe "::Error" do
-    subject { sheet_class::Error }
+    subject { table_class::Error }
 
     it "exposes some kind of Tabulard::Errors::Error" do
       expect(subject.superclass).to be(Tabulard::Errors::Error)
@@ -34,18 +34,18 @@ RSpec.describe Tabulard::Sheet, monadic_result: true do
   end
 
   describe "::ClosureError" do
-    subject { sheet_class::ClosureError }
+    subject { table_class::ClosureError }
 
-    it "exposes some kind of Tabulard::Sheet::Error" do
-      expect(subject.superclass).to be(Tabulard::Sheet::Error)
+    it "exposes some kind of Tabulard::Table::Error" do
+      expect(subject.superclass).to be(Tabulard::Table::Error)
     end
   end
 
   describe "::InputError" do
-    subject { sheet_class::InputError }
+    subject { table_class::InputError }
 
-    it "exposes some kind of Tabulard::Sheet::Error" do
-      expect(subject.superclass).to be(Tabulard::Sheet::Error)
+    it "exposes some kind of Tabulard::Table::Error" do
+      expect(subject.superclass).to be(Tabulard::Table::Error)
     end
   end
 
@@ -53,15 +53,15 @@ RSpec.describe Tabulard::Sheet, monadic_result: true do
     let(:col) { double }
     let(:val) { double }
 
-    let(:wrapper) { sheet_class::Header.new(col: col, value: val) }
+    let(:wrapper) { table_class::Header.new(col: col, value: val) }
 
     it "exposes a header wrapper" do
       expect(wrapper).to have_attributes(col: col, value: val)
     end
 
     it "is comparable" do
-      expect(wrapper).to eq(sheet_class::Header.new(col: col, value: val))
-      expect(wrapper).not_to eq(sheet_class::Header.new(col: double, value: val))
+      expect(wrapper).to eq(table_class::Header.new(col: col, value: val))
+      expect(wrapper).not_to eq(table_class::Header.new(col: double, value: val))
     end
   end
 
@@ -69,15 +69,15 @@ RSpec.describe Tabulard::Sheet, monadic_result: true do
     let(:row) { double }
     let(:val) { double }
 
-    let(:wrapper) { sheet_class::Row.new(row: row, value: val) }
+    let(:wrapper) { table_class::Row.new(row: row, value: val) }
 
     it "exposes a row wrapper" do
       expect(wrapper).to have_attributes(row: row, value: val)
     end
 
     it "is comparable" do
-      expect(wrapper).to eq(sheet_class::Row.new(row: row, value: val))
-      expect(wrapper).not_to eq(sheet_class::Row.new(row: double, value: val))
+      expect(wrapper).to eq(table_class::Row.new(row: row, value: val))
+      expect(wrapper).not_to eq(table_class::Row.new(row: double, value: val))
     end
   end
 
@@ -86,15 +86,15 @@ RSpec.describe Tabulard::Sheet, monadic_result: true do
     let(:col) { double }
     let(:val) { double }
 
-    let(:wrapper) { sheet_class::Cell.new(row: row, col: col, value: val) }
+    let(:wrapper) { table_class::Cell.new(row: row, col: col, value: val) }
 
     it "exposes a row wrapper" do
       expect(wrapper).to have_attributes(row: row, col: col, value: val)
     end
 
     it "is comparable" do
-      expect(wrapper).to eq(sheet_class::Cell.new(row: row, col: col, value: val))
-      expect(wrapper).not_to eq(sheet_class::Cell.new(row: double, col: col, value: val))
+      expect(wrapper).to eq(table_class::Cell.new(row: row, col: col, value: val))
+      expect(wrapper).not_to eq(table_class::Cell.new(row: double, col: col, value: val))
     end
   end
 
@@ -150,31 +150,31 @@ RSpec.describe Tabulard::Sheet, monadic_result: true do
   end
 
   describe "::open" do
-    let(:sheet) do
-      instance_double(sheet_class)
+    let(:table) do
+      instance_double(table_class)
     end
 
     before do
-      allow(sheet_class).to receive(:new).with(foo, bar: bar).and_return(sheet)
+      allow(table_class).to receive(:new).with(foo, bar: bar).and_return(table)
     end
 
     context "without a block" do
-      it "returns a new sheet wrapped as a Success" do
-        expect(sheet_class.open(foo, bar: bar)).to eq(Success(sheet))
+      it "returns a new table wrapped as a Success" do
+        expect(table_class.open(foo, bar: bar)).to eq(Success(table))
       end
     end
 
     context "with a block" do
       before do
-        allow(sheet).to receive(:close)
+        allow(table).to receive(:close)
       end
 
-      it "yields a new sheet" do
+      it "yields a new table" do
         yielded = false
 
-        sheet_class.open(foo, bar: bar) do |opened_sheet|
+        table_class.open(foo, bar: bar) do |opened_table|
           yielded = true
-          expect(opened_sheet).to be(sheet)
+          expect(opened_table).to be(table)
         end
 
         expect(yielded).to be(true)
@@ -182,45 +182,45 @@ RSpec.describe Tabulard::Sheet, monadic_result: true do
 
       it "returns the value of the block" do
         block_result = double
-        actual_block_result = sheet_class.open(foo, bar: bar) { block_result }
+        actual_block_result = table_class.open(foo, bar: bar) { block_result }
 
         expect(actual_block_result).to eq(block_result)
       end
 
       it "closes after yielding" do
-        sheet_class.open(foo, bar: bar) do
-          expect(sheet).not_to have_received(:close)
+        table_class.open(foo, bar: bar) do
+          expect(table).not_to have_received(:close)
         end
 
-        expect(sheet).to have_received(:close)
+        expect(table).to have_received(:close)
       end
 
       context "when an exception is raised" do
         let(:exception)   { Class.new(StandardError) }
-        let(:error)       { Class.new(Tabulard::Sheet::Error) }
-        let(:input_error) { Class.new(Tabulard::Sheet::InputError) }
+        let(:error)       { Class.new(Tabulard::Table::Error) }
+        let(:input_error) { Class.new(Tabulard::Table::InputError) }
 
         context "without yielding control" do
           it "doesn't rescue an exception" do
-            allow(sheet_class).to receive(:new).and_raise(exception)
+            allow(table_class).to receive(:new).and_raise(exception)
 
             expect do
-              sheet_class.open(foo, bar: bar)
+              table_class.open(foo, bar: bar)
             end.to raise_error(exception)
           end
 
           it "doesn't rescue an error" do
-            allow(sheet_class).to receive(:new).and_raise(error)
+            allow(table_class).to receive(:new).and_raise(error)
 
             expect do
-              sheet_class.open(foo, bar: bar)
+              table_class.open(foo, bar: bar)
             end.to raise_error(error)
           end
 
           it "rescues an input error and returns a failure" do
-            allow(sheet_class).to receive(:new).and_raise(input_error.exception)
+            allow(table_class).to receive(:new).and_raise(input_error.exception)
 
-            result = sheet_class.open(foo, bar: bar)
+            result = table_class.open(foo, bar: bar)
 
             expect(result).to eq(Failure())
           end
@@ -229,39 +229,39 @@ RSpec.describe Tabulard::Sheet, monadic_result: true do
         context "while yielding control" do
           it "doesn't rescue but closes after an exception is raised" do
             expect do
-              sheet_class.open(foo, bar: bar) do
-                expect(sheet).not_to have_received(:close)
+              table_class.open(foo, bar: bar) do
+                expect(table).not_to have_received(:close)
                 raise exception
               end
             end.to raise_error(exception)
 
-            expect(sheet).to have_received(:close)
+            expect(table).to have_received(:close)
           end
 
           it "doesn't rescue but closes after an error is raised" do
             expect do
-              sheet_class.open(foo, bar: bar) do
-                expect(sheet).not_to have_received(:close)
+              table_class.open(foo, bar: bar) do
+                expect(table).not_to have_received(:close)
                 raise error
               end
             end.to raise_error(error)
 
-            expect(sheet).to have_received(:close)
+            expect(table).to have_received(:close)
           end
 
           it "rescues and closes after an input error is raised" do
-            sheet_class.open(foo, bar: bar) do
-              expect(sheet).not_to have_received(:close)
+            table_class.open(foo, bar: bar) do
+              expect(table).not_to have_received(:close)
               raise input_error
             end
 
-            expect(sheet).to have_received(:close)
+            expect(table).to have_received(:close)
           end
 
           it "rescues and returns an empty failure after an input error is raised" do
             e = input_error.exception # raise the instance directly to simplify result matching
 
-            result = sheet_class.open(foo, bar: bar) do
+            result = table_class.open(foo, bar: bar) do
               raise e
             end
 
@@ -274,36 +274,36 @@ RSpec.describe Tabulard::Sheet, monadic_result: true do
 
   describe "#each_header" do
     it "is abstract" do
-      expect { sheet.each_header }.to raise_error(
-        NoMethodError, "You must implement SheetClass#each_header => self"
+      expect { table.each_header }.to raise_error(
+        NoMethodError, "You must implement TableClass#each_header => self"
       )
     end
   end
 
   describe "#each_row" do
     it "is abstract" do
-      expect { sheet.each_row }.to raise_error(
-        NoMethodError, "You must implement SheetClass#each_row => self"
+      expect { table.each_row }.to raise_error(
+        NoMethodError, "You must implement TableClass#each_row => self"
       )
     end
   end
 
   describe "#close" do
-    before { sheet }
+    before { table }
 
     it "removes the instance variables" do
-      expect { sheet.close }.to [
-        change { sheet.instance_variable_defined?(:@foo) }.from(true).to(false),
-        change { sheet.instance_variable_defined?(:@bar) }.from(true).to(false),
+      expect { table.close }.to [
+        change { table.instance_variable_defined?(:@foo) }.from(true).to(false),
+        change { table.instance_variable_defined?(:@bar) }.from(true).to(false),
       ].reduce(:&)
     end
 
     it "marks the instance as closed" do
-      expect { sheet.close }.to change(sheet, :closed?).from(false).to(true)
+      expect { table.close }.to change(table, :closed?).from(false).to(true)
     end
 
     it "returns nil" do
-      expect(sheet.close).to be_nil
+      expect(table.close).to be_nil
     end
   end
 end

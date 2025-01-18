@@ -3,7 +3,7 @@
 require "tabulard/messaging"
 require "tabulard/headers"
 require "tabulard/row_processor"
-require "tabulard/sheet"
+require "tabulard/table"
 
 RSpec.describe Tabulard::RowProcessor, monadic_result: true do
   let(:messenger) do
@@ -24,14 +24,14 @@ RSpec.describe Tabulard::RowProcessor, monadic_result: true do
 
   let(:cells) do
     [
-      instance_double(Tabulard::Sheet::Cell, value: double, col: double),
-      instance_double(Tabulard::Sheet::Cell, value: double, col: double),
-      instance_double(Tabulard::Sheet::Cell, value: double, col: double),
+      instance_double(Tabulard::Table::Cell, value: double, col: double),
+      instance_double(Tabulard::Table::Cell, value: double, col: double),
+      instance_double(Tabulard::Table::Cell, value: double, col: double),
     ]
   end
 
   let(:row) do
-    instance_double(Tabulard::Sheet::Row, row: double, value: cells)
+    instance_double(Tabulard::Table::Row, row: double, value: cells)
   end
 
   let(:row_value_builder) do

@@ -12,7 +12,7 @@ RSpec.describe Tabulard::Backends::Csv::InvalidCSV do
       described_class.new(
         code: "invalid_csv",
         code_data: nil,
-        scope: "SHEET",
+        scope: "TABLE",
         scope_data: nil
       )
     end

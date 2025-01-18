@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Tabulard
-  class SheetProcessorResult
+  class TableProcessorResult
     def initialize(result:, messages: [])
       @result = result
       @messages = messages

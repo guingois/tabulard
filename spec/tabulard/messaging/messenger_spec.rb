@@ -22,7 +22,7 @@ RSpec.describe Tabulard::Messaging::Messenger do
         messenger = described_class.new
 
         expect(messenger).to have_attributes(
-          scope: scopes::SHEET,
+          scope: scopes::TABLE,
           scope_data: nil,
           messages: []
         )

@@ -50,7 +50,7 @@ RSpec.describe Tabulard, monadic_result: true do
   end
 
   let(:processor) do
-    Tabulard::SheetProcessor.new(specification)
+    Tabulard::TableProcessor.new(specification)
   end
 
   let(:input) do
@@ -72,7 +72,7 @@ RSpec.describe Tabulard, monadic_result: true do
     a
   end
 
-  context "when there is no sheet error" do
+  context "when there is no table error" do
     it "is a success without errors" do
       result = process(input) {}
 
@@ -116,7 +116,7 @@ RSpec.describe Tabulard, monadic_result: true do
     end
   end
 
-  context "when there are unspecified columns in the sheet" do
+  context "when there are unspecified columns in the table" do
     before do
       input.each_index do |idx|
         input[idx] = input[idx][0..1] + ["oof"] + input[idx][2..] + ["rab"]
@@ -189,14 +189,14 @@ RSpec.describe Tabulard, monadic_result: true do
           have_attributes(
             code: "missing_column",
             code_data: { value: "Foo" },
-            scope: Tabulard::Messaging::SCOPES::SHEET,
+            scope: Tabulard::Messaging::SCOPES::TABLE,
             scope_data: nil,
             severity: Tabulard::Messaging::SEVERITIES::ERROR
           ),
           have_attributes(
             code: "missing_column",
             code_data: { value: "Bar 5" },
-            scope: Tabulard::Messaging::SCOPES::SHEET,
+            scope: Tabulard::Messaging::SCOPES::TABLE,
             scope_data: nil,
             severity: Tabulard::Messaging::SEVERITIES::ERROR
           )

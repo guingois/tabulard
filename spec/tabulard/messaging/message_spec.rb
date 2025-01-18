@@ -27,7 +27,7 @@ RSpec.describe Tabulard::Messaging::Message do
     expect(described_class.new(code: code)).to have_attributes(
       code: code,
       code_data: nil,
-      scope: Tabulard::Messaging::SCOPES::SHEET,
+      scope: Tabulard::Messaging::SCOPES::TABLE,
       scope_data: nil,
       severity: Tabulard::Messaging::SEVERITIES::WARN
     )
@@ -90,12 +90,12 @@ RSpec.describe Tabulard::Messaging::Message do
     let(:code_data)  { nil }
     let(:severity)   { "ERROR" }
 
-    context "when scoped to the sheet" do
-      let(:scope)      { Tabulard::Messaging::SCOPES::SHEET }
+    context "when scoped to the table" do
+      let(:scope)      { Tabulard::Messaging::SCOPES::TABLE }
       let(:scope_data) { nil }
 
       it "can be reduced to a string" do
-        expect(message.to_s).to eq("[SHEET] ERROR: foo_is_bar")
+        expect(message.to_s).to eq("[TABLE] ERROR: foo_is_bar")
       end
     end
 
@@ -135,12 +135,12 @@ RSpec.describe Tabulard::Messaging::Message do
     end
 
     context "when there is some data associated with the code" do
-      let(:scope)      { Tabulard::Messaging::SCOPES::SHEET }
+      let(:scope)      { Tabulard::Messaging::SCOPES::TABLE }
       let(:scope_data) { nil }
       let(:code_data) { { "foo" => "bar" } }
 
       it "can be reduced to a string" do
-        expect(message.to_s).to match(/^\[SHEET\] ERROR: foo_is_bar {"foo" ?=> ?"bar"}$/)
+        expect(message.to_s).to match(/^\[TABLE\] ERROR: foo_is_bar {"foo" ?=> ?"bar"}$/)
       end
     end
   end

@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 require "tabulard/backends/wrapper"
-require "support/shared/sheet/factories"
-require "support/shared/sheet/backend_empty"
-require "support/shared/sheet/backend_filled"
+require "support/shared/table/factories"
+require "support/shared/table/backend_empty"
+require "support/shared/table/backend_filled"
 
 RSpec.describe Tabulard::Backends::Wrapper do
-  include_context "sheet/factories"
+  include_context "table/factories"
 
   let(:table_interface) do
     Module.new do
@@ -32,12 +32,12 @@ RSpec.describe Tabulard::Backends::Wrapper do
     stub_input(source)
   end
 
-  let(:sheet_opts) do
+  let(:table_opts) do
     {}
   end
 
-  let(:sheet) do
-    described_class.new(input, **sheet_opts)
+  let(:table) do
+    described_class.new(input, **table_opts)
   end
 
   def stub_input(source)
@@ -66,7 +66,7 @@ RSpec.describe Tabulard::Backends::Wrapper do
   end
 
   after do |example|
-    sheet.close unless example.metadata[:autoclose_sheet] == false
+    table.close unless example.metadata[:autoclose_table] == false
   end
 
   context "when the input table is empty" do
@@ -74,7 +74,7 @@ RSpec.describe Tabulard::Backends::Wrapper do
       []
     end
 
-    include_examples "sheet/backend_empty", sized_rows_enum: true
+    include_examples "table/backend_empty", sized_rows_enum: true
   end
 
   context "when the input table is filled" do
@@ -86,6 +86,6 @@ RSpec.describe Tabulard::Backends::Wrapper do
       end.freeze
     end
 
-    include_examples "sheet/backend_filled", sized_rows_enum: true
+    include_examples "table/backend_filled", sized_rows_enum: true
   end
 end

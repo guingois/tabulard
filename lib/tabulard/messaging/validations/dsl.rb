@@ -18,8 +18,8 @@ module Tabulard
           include Mixins::RowValidations
         end
 
-        def sheet
-          include Mixins::SheetValidations
+        def table
+          include Mixins::TableValidations
         end
 
         def nil_code_data

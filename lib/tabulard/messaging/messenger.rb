@@ -6,7 +6,7 @@ module Tabulard
   module Messaging
     class Messenger
       def initialize(
-        scope: SCOPES::SHEET,
+        scope: SCOPES::TABLE,
         scope_data: nil,
         validate_messages: Messaging.config.validate_messages
       )

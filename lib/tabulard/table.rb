@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require_relative "sheet/col_converter"
+require_relative "table/col_converter"
 require_relative "errors/error"
 require_relative "messaging/messenger"
 require_relative "messaging/message_variant"
 require_relative "utils/monadic_result"
 
 module Tabulard
-  module Sheet
+  module Table
     def self.included(mod)
       mod.extend(ClassMethods)
     end
@@ -22,13 +22,13 @@ module Tabulard
 
     module ClassMethods
       def open(*args, **opts)
-        sheet = new(*args, **opts)
-        return Utils::MonadicResult::Success.new(sheet) unless block_given?
+        table = new(*args, **opts)
+        return Utils::MonadicResult::Success.new(table) unless block_given?
 
         begin
-          yield sheet
+          yield table
         ensure
-          sheet.close
+          table.close
         end
       rescue InputError
         Utils::MonadicResult::Failure.new
@@ -65,7 +65,7 @@ module Tabulard
       end
 
       def row_value_index
-        Sheet.col2int(col) - 1
+        Table.col2int(col) - 1
       end
     end
 

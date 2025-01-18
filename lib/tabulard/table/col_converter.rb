@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Tabulard
-  module Sheet
+  module Table
     class ColConverter
       CHARSET      = ("A".."Z").to_a.freeze
       CHARSET_SIZE = CHARSET.size
