@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require_relative "../sheet"
+require_relative "../table"
 
 module Tabulard
   module Backends
     class Wrapper
-      include Sheet
+      include Table
 
       def initialize(table, headers: nil, **opts)
         super(**opts)
@@ -96,7 +96,7 @@ module Tabulard
       end
 
       def read_cell(row_data, col_index)
-        col = Sheet.int2col(@first_col_name + col_index)
+        col = Table.int2col(@first_col_name + col_index)
         cell_value = row_data[@first_col + col_index]
 
         [col, cell_value]

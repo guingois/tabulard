@@ -132,13 +132,13 @@ RSpec.describe Tabulard::Messaging::Validations::BaseValidator do
     end
   end
 
-  context "when validating a sheet message" do
+  context "when validating a table message" do
     let(:validator_class) do
-      Class.new(described_class) { sheet }
+      Class.new(described_class) { table }
     end
 
     it "validates an exact scope" do
-      msg1 = instance_double(message_class, scope: scopes::SHEET)
+      msg1 = instance_double(message_class, scope: scopes::TABLE)
       msg2 = instance_double(message_class, scope: double)
       expect(validator.validate_scope(msg1)).to be true
       expect(validator.validate_scope(msg2)).to be false

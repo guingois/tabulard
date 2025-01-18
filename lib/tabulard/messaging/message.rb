@@ -11,7 +11,7 @@ module Tabulard
       def initialize(
         code:,
         code_data: nil,
-        scope: SCOPES::SHEET,
+        scope: SCOPES::TABLE,
         scope_data: nil,
         severity: SEVERITIES::WARN
       )
@@ -59,7 +59,7 @@ module Tabulard
 
       def scoping_to_s
         case scope
-        when SCOPES::SHEET then "[#{scope}]"
+        when SCOPES::TABLE then "[#{scope}]"
         when SCOPES::ROW   then "[#{scope}: #{scope_data[:row]}]"
         when SCOPES::COL   then "[#{scope}: #{scope_data[:col]}]"
         when SCOPES::CELL  then "[#{scope}: #{scope_data[:col]}#{scope_data[:row]}]"

@@ -1,25 +1,25 @@
 # frozen_string_literal: true
 
 require "tabulard/backends/csv"
-require "support/shared/sheet/factories"
-require "support/shared/sheet/backend_empty"
-require "support/shared/sheet/backend_filled"
+require "support/shared/table/factories"
+require "support/shared/table/backend_empty"
+require "support/shared/table/backend_filled"
 require "csv"
 require "stringio"
 
 RSpec.describe Tabulard::Backends::Csv do
-  include_context "sheet/factories"
+  include_context "table/factories"
 
   let(:input) do
     stub_input(source)
   end
 
-  let(:sheet_opts) do
+  let(:table_opts) do
     {}
   end
 
-  let(:sheet) do
-    described_class.new(input, **sheet_opts)
+  let(:table) do
+    described_class.new(input, **table_opts)
   end
 
   def stub_input(source)
@@ -33,7 +33,7 @@ RSpec.describe Tabulard::Backends::Csv do
   end
 
   after do |example|
-    sheet.close unless example.metadata[:autoclose_sheet] == false
+    table.close unless example.metadata[:autoclose_table] == false
     input.close
   end
 
@@ -42,7 +42,7 @@ RSpec.describe Tabulard::Backends::Csv do
       []
     end
 
-    include_examples "sheet/backend_empty"
+    include_examples "table/backend_empty"
   end
 
   context "when the input table is filled" do
@@ -54,7 +54,7 @@ RSpec.describe Tabulard::Backends::Csv do
       end.freeze
     end
 
-    include_examples "sheet/backend_filled"
+    include_examples "table/backend_filled"
   end
 
   describe "encodings" do
@@ -79,7 +79,7 @@ RSpec.describe Tabulard::Backends::Csv do
       headers_data_utf8.map { |str| str.encode(Encoding::ISO_8859_15) }
     end
 
-    let(:sheet_headers_data) { sheet.each_header.map(&:value) }
+    let(:table_headers_data) { table.each_header.map(&:value) }
 
     context "when the IO is opened with the correct external encoding" do
       let(:input) do
@@ -87,7 +87,7 @@ RSpec.describe Tabulard::Backends::Csv do
       end
 
       it "does not interfere" do
-        expect(sheet_headers_data).to eq(headers_data_latin9)
+        expect(table_headers_data).to eq(headers_data_latin9)
       end
     end
 
@@ -97,7 +97,7 @@ RSpec.describe Tabulard::Backends::Csv do
       end
 
       it "fails" do
-        expect { sheet }.to raise_error(described_class::InputError)
+        expect { table }.to raise_error(described_class::InputError)
       end
     end
 
@@ -111,7 +111,7 @@ RSpec.describe Tabulard::Backends::Csv do
       end
 
       it "does not interfere" do
-        expect(sheet_headers_data).to eq(headers_data_utf8)
+        expect(table_headers_data).to eq(headers_data_utf8)
       end
     end
   end
@@ -124,15 +124,15 @@ RSpec.describe Tabulard::Backends::Csv do
         .with(input, row_sep: :auto, col_sep: ",", quote_char: '"')
         .and_call_original
 
-      sheet
+      table
     end
   end
 
   describe "#close" do
     let(:source) { [] }
 
-    it "doesn't close the underlying sheet" do
-      expect { sheet.close }.not_to change(input, :closed?).from(false)
+    it "doesn't close the underlying table" do
+      expect { table.close }.not_to change(input, :closed?).from(false)
     end
   end
 end

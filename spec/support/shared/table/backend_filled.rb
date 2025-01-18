@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require "tabulard/sheet"
+require "tabulard/table"
 
-RSpec.shared_examples "sheet/backend_filled" do |sized_rows_enum: false|
+RSpec.shared_examples "table/backend_filled" do |sized_rows_enum: false|
   unless instance_methods.include?(:source_data)
     alias_method :source_data, :source
   end
@@ -14,17 +14,17 @@ RSpec.shared_examples "sheet/backend_filled" do |sized_rows_enum: false|
 
     context "with a block" do
       it "yields each header, with its letter-based index" do
-        expect { |b| sheet.each_header(&b) }.to yield_successive_args(*headers)
+        expect { |b| table.each_header(&b) }.to yield_successive_args(*headers)
       end
 
       it "returns self" do
-        expect(sheet.each_header { double }).to be(sheet)
+        expect(table.each_header { double }).to be(table)
       end
     end
 
     context "without a block" do
       it "returns an enumerator" do
-        enum = sheet.each_header
+        enum = table.each_header
 
         expect(enum).to be_a(Enumerator)
         expect(enum.size).to eq(headers.size)
@@ -40,17 +40,17 @@ RSpec.shared_examples "sheet/backend_filled" do |sized_rows_enum: false|
 
     context "with a block" do
       it "yields each row, with its integer-based index" do
-        expect { |b| sheet.each_row(&b) }.to yield_successive_args(*rows)
+        expect { |b| table.each_row(&b) }.to yield_successive_args(*rows)
       end
 
       it "returns self" do
-        expect(sheet.each_row { double }).to be(sheet)
+        expect(table.each_row { double }).to be(table)
       end
     end
 
     context "without a block" do
       it "returns an enumerator" do
-        enum = sheet.each_row
+        enum = table.each_row
 
         expect(enum).to be_a(Enumerator)
         expect(enum.size).to eq(sized_rows_enum ? rows.size : nil)
@@ -61,19 +61,19 @@ RSpec.shared_examples "sheet/backend_filled" do |sized_rows_enum: false|
 
   describe "#close" do
     it "returns nil" do
-      expect(sheet.close).to be_nil
+      expect(table.close).to be_nil
     end
   end
 
   context "when it is closed" do
-    before { sheet.close }
+    before { table.close }
 
     it "can't enumerate headers" do
-      expect { sheet.each_header }.to raise_error(Tabulard::Sheet::ClosureError)
+      expect { table.each_header }.to raise_error(Tabulard::Table::ClosureError)
     end
 
     it "can't enumerate rows" do
-      expect { sheet.each_row }.to raise_error(Tabulard::Sheet::ClosureError)
+      expect { table.each_row }.to raise_error(Tabulard::Table::ClosureError)
     end
   end
 
@@ -85,7 +85,7 @@ RSpec.shared_examples "sheet/backend_filled" do |sized_rows_enum: false|
       Array.new(headers_size) { |i| "header#{i}" }
     end
 
-    let(:sheet_opts) do
+    let(:table_opts) do
       super().merge(headers: headers_data)
     end
 
@@ -94,21 +94,21 @@ RSpec.shared_examples "sheet/backend_filled" do |sized_rows_enum: false|
 
       it "relies on the custom headers" do
         headers = build_headers(headers_data)
-        expect { |b| sheet.each_header(&b) }.to yield_successive_args(*headers)
+        expect { |b| table.each_header(&b) }.to yield_successive_args(*headers)
       end
 
       it "treats all rows as data" do
         rows = build_rows(source_data, row: 1)
-        expect { |b| sheet.each_row(&b) }.to yield_successive_args(*rows)
+        expect { |b| table.each_row(&b) }.to yield_successive_args(*rows)
       end
     end
 
     context "when their size is smaller than the size of the data" do
       let(:diff) { -1 }
 
-      it "fails to initialize", autoclose_sheet: false do
-        expect { sheet }.to raise_error(
-          Tabulard::Sheet::TooFewHeaders,
+      it "fails to initialize", autoclose_table: false do
+        expect { table }.to raise_error(
+          Tabulard::Table::TooFewHeaders,
           "Expected #{data_size} headers, got: #{headers_size}"
         )
       end
@@ -117,9 +117,9 @@ RSpec.shared_examples "sheet/backend_filled" do |sized_rows_enum: false|
     context "when their size is larger than the size of the data" do
       let(:diff) { 1 }
 
-      it "fails to initialize", autoclose_sheet: false do
-        expect { sheet }.to raise_error(
-          Tabulard::Sheet::TooManyHeaders,
+      it "fails to initialize", autoclose_table: false do
+        expect { table }.to raise_error(
+          Tabulard::Table::TooManyHeaders,
           "Expected #{data_size} headers, got: #{headers_size}"
         )
       end

@@ -10,8 +10,8 @@ module Tabulard
     include Utils::MonadicResult
 
     class Header
-      def initialize(sheet_header, spec_column)
-        @header = sheet_header
+      def initialize(table_header, spec_column)
+        @header = table_header
         @column = spec_column
       end
 

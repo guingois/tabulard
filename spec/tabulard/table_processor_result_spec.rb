@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require "tabulard/sheet_processor_result"
+require "tabulard/table_processor_result"
 
-RSpec.describe Tabulard::SheetProcessorResult do
+RSpec.describe Tabulard::TableProcessorResult do
   let(:result) { double }
   let(:messages) { double }
 

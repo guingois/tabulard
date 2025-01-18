@@ -48,7 +48,7 @@ RSpec.describe Tabulard::Messaging::Validations do
     end
 
     it "validates" do
-      message_class.def_validator { sheet }
+      message_class.def_validator { table }
       message = message_class.new(scope: "bar")
       expect { message_class.validate(message) }.to raise_error(described_class::InvalidMessage)
     end

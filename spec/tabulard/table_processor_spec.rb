@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require "tabulard/sheet_processor"
+require "tabulard/table_processor"
 require "tabulard/specification"
 
-RSpec.describe Tabulard::SheetProcessor, monadic_result: true do
+RSpec.describe Tabulard::TableProcessor, monadic_result: true do
   let(:specification) do
     instance_double(Tabulard::Specification)
   end
@@ -16,8 +16,8 @@ RSpec.describe Tabulard::SheetProcessor, monadic_result: true do
     instance_double(Tabulard::Messaging::Messenger, messages: double)
   end
 
-  let(:sheet_class) do
-    Class.new { include Tabulard::Sheet }
+  let(:table_class) do
+    Class.new { include Tabulard::Table }
   end
 
   let(:backend_args) do
@@ -28,27 +28,27 @@ RSpec.describe Tabulard::SheetProcessor, monadic_result: true do
     { foo: double, bar: double }
   end
 
-  let(:sheet) do
-    instance_double(sheet_class)
+  let(:table) do
+    instance_double(table_class)
   end
 
   def call(&block)
     block ||= proc {} # stub a dummy proc
-    processor.call(*backend_args, backend: sheet_class, **backend_opts, &block)
+    processor.call(*backend_args, backend: table_class, **backend_opts, &block)
   end
 
-  def stub_sheet_open
+  def stub_table_open
     stub = receive(:open).with(*backend_args, **backend_opts, messenger: messenger)
     stub = yield(stub) if block_given?
-    allow(sheet_class).to(stub)
+    allow(table_class).to(stub)
   end
 
-  def stub_sheet_open_ok
-    stub_sheet_open { _1.and_yield(sheet) }
+  def stub_table_open_ok
+    stub_table_open { _1.and_yield(table) }
   end
 
-  def stub_sheet_open_ko
-    stub_sheet_open { _1.and_return(Failure()) }
+  def stub_table_open_ko
+    stub_table_open { _1.and_return(Failure()) }
   end
 
   before do
@@ -57,7 +57,7 @@ RSpec.describe Tabulard::SheetProcessor, monadic_result: true do
 
   it "passes the args and opts to Backends.open" do
     actual_args = backend_args
-    actual_opts = backend_opts.merge(backend: sheet_class, messenger: messenger)
+    actual_opts = backend_opts.merge(backend: table_class, messenger: messenger)
 
     expect(Tabulard::Backends).to(
       receive(:open)
@@ -68,14 +68,14 @@ RSpec.describe Tabulard::SheetProcessor, monadic_result: true do
     processor.call(*actual_args, **actual_opts)
   end
 
-  context "when opening the sheet fails" do
+  context "when opening the table fails" do
     before do
-      stub_sheet_open_ko
+      stub_table_open_ko
     end
 
     it "is an empty failure, with messages" do
       expect(call).to eq(
-        Tabulard::SheetProcessorResult.new(
+        Tabulard::TableProcessorResult.new(
           result: Failure(),
           messages: messenger.messages
         )
@@ -83,13 +83,13 @@ RSpec.describe Tabulard::SheetProcessor, monadic_result: true do
     end
   end
 
-  shared_context "when there is no sheet error" do
-    let(:sheet_headers) do
-      Array.new(2) { instance_double(Tabulard::Sheet::Header) }
+  shared_context "when there is no table error" do
+    let(:table_headers) do
+      Array.new(2) { instance_double(Tabulard::Table::Header) }
     end
 
-    let(:sheet_rows) do
-      Array.new(3) { instance_double(Tabulard::Sheet::Row) }
+    let(:table_rows) do
+      Array.new(3) { instance_double(Tabulard::Table::Row) }
     end
 
     let(:messenger) do
@@ -120,8 +120,8 @@ RSpec.describe Tabulard::SheetProcessor, monadic_result: true do
     end
 
     def stub_headers_ops(result)
-      sheet_headers.each do |sheet_header|
-        expect(headers).to receive(:add).with(sheet_header).ordered
+      table_headers.each do |table_header|
+        expect(headers).to receive(:add).with(table_header).ordered
       end
 
       expect(headers).to receive(:result).and_return(result).ordered
@@ -130,15 +130,15 @@ RSpec.describe Tabulard::SheetProcessor, monadic_result: true do
     before do
       stub_headers
 
-      stub_sheet_open_ok
+      stub_table_open_ok
 
-      stub_enumeration(sheet, :each_header, sheet_headers)
-      stub_enumeration(sheet, :each_row, sheet_rows)
+      stub_enumeration(table, :each_header, table_headers)
+      stub_enumeration(table, :each_row, table_rows)
     end
   end
 
   context "when there is a header error" do
-    include_context "when there is no sheet error"
+    include_context "when there is no table error"
 
     before do
       stub_headers_ops(Failure())
@@ -148,7 +148,7 @@ RSpec.describe Tabulard::SheetProcessor, monadic_result: true do
       result = call
 
       expect(result).to eq(
-        Tabulard::SheetProcessorResult.new(
+        Tabulard::TableProcessorResult.new(
           result: Failure(),
           messages: messenger.messages
         )
@@ -157,14 +157,14 @@ RSpec.describe Tabulard::SheetProcessor, monadic_result: true do
   end
 
   context "when there is no error" do
-    include_context "when there is no sheet error"
+    include_context "when there is no table error"
 
     let(:headers_spec) do
       double
     end
 
     let(:processed_rows) do
-      Array.new(sheet_rows.size) { double }
+      Array.new(table_rows.size) { double }
     end
 
     def stub_row_processing
@@ -174,7 +174,7 @@ RSpec.describe Tabulard::SheetProcessor, monadic_result: true do
         .and_return(row_processor = instance_double(Tabulard::RowProcessor))
       )
 
-      sheet_rows.zip(processed_rows) do |row, processed_row|
+      table_rows.zip(processed_rows) do |row, processed_row|
         allow(row_processor).to receive(:call).with(row).and_return(processed_row)
       end
     end
@@ -189,7 +189,7 @@ RSpec.describe Tabulard::SheetProcessor, monadic_result: true do
       result = call
 
       expect(result).to eq(
-        Tabulard::SheetProcessorResult.new(
+        Tabulard::TableProcessorResult.new(
           result: Success(),
           messages: messenger.messages
         )

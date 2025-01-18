@@ -3,7 +3,7 @@
 require "tabulard/headers"
 require "tabulard/column"
 require "tabulard/messaging"
-require "tabulard/sheet"
+require "tabulard/table"
 require "tabulard/specification"
 
 RSpec.describe Tabulard::Headers, monadic_result: true do
@@ -25,9 +25,9 @@ RSpec.describe Tabulard::Headers, monadic_result: true do
     Tabulard::Messaging::Messenger.new
   end
 
-  let(:sheet_headers) do
+  let(:table_headers) do
     Array.new(5) do |i|
-      instance_double(Tabulard::Sheet::Header, col: "FOO", value: "header#{i}")
+      instance_double(Tabulard::Table::Header, col: "FOO", value: "header#{i}")
     end
   end
 
@@ -45,10 +45,10 @@ RSpec.describe Tabulard::Headers, monadic_result: true do
 
   before do
     stub_specification(
-      sheet_headers[0] => columns[4],
-      sheet_headers[1] => columns[1],
-      sheet_headers[2] => columns[7],
-      sheet_headers[3] => columns[1]
+      table_headers[0] => columns[4],
+      table_headers[1] => columns[1],
+      table_headers[2] => columns[7],
+      table_headers[3] => columns[1]
     )
   end
 
@@ -61,18 +61,18 @@ RSpec.describe Tabulard::Headers, monadic_result: true do
 
     context "with some successful #add" do
       before do
-        headers.add(sheet_headers[1])
-        headers.add(sheet_headers[2])
-        headers.add(sheet_headers[0])
+        headers.add(table_headers[1])
+        headers.add(table_headers[2])
+        headers.add(table_headers[0])
       end
 
       it "is a success and preserve #add order" do
         expect(headers.result).to eq(
           Success(
             [
-              Tabulard::Headers::Header.new(sheet_headers[1], columns[1]),
-              Tabulard::Headers::Header.new(sheet_headers[2], columns[7]),
-              Tabulard::Headers::Header.new(sheet_headers[0], columns[4]),
+              Tabulard::Headers::Header.new(table_headers[1], columns[1]),
+              Tabulard::Headers::Header.new(table_headers[2], columns[7]),
+              Tabulard::Headers::Header.new(table_headers[0], columns[4]),
             ]
           )
         )
@@ -85,8 +85,8 @@ RSpec.describe Tabulard::Headers, monadic_result: true do
 
     context "when a header doesn't match a column" do
       before do
-        headers.add(sheet_headers[0])
-        headers.add(sheet_headers[4])
+        headers.add(table_headers[0])
+        headers.add(table_headers[4])
       end
 
       it "is a failure" do
@@ -98,9 +98,9 @@ RSpec.describe Tabulard::Headers, monadic_result: true do
           be_a(Tabulard::Messaging::Message) & have_attributes(
             severity: "ERROR",
             code: "invalid_header",
-            code_data: { value: sheet_headers[4].value },
+            code_data: { value: table_headers[4].value },
             scope: "COL",
-            scope_data: { col: sheet_headers[4].col }
+            scope_data: { col: table_headers[4].col }
           )
         )
       end
@@ -108,9 +108,9 @@ RSpec.describe Tabulard::Headers, monadic_result: true do
 
     context "when there is a duplicate" do
       before do
-        headers.add(sheet_headers[0])
-        headers.add(sheet_headers[3])
-        headers.add(sheet_headers[1])
+        headers.add(table_headers[0])
+        headers.add(table_headers[3])
+        headers.add(table_headers[1])
       end
 
       it "is a failure" do
@@ -122,9 +122,9 @@ RSpec.describe Tabulard::Headers, monadic_result: true do
           be_a(Tabulard::Messaging::Message) & have_attributes(
             severity: "ERROR",
             code: "duplicated_header",
-            code_data: { value: sheet_headers[1].value },
+            code_data: { value: table_headers[1].value },
             scope: "COL",
-            scope_data: { col: sheet_headers[1].col }
+            scope_data: { col: table_headers[1].col }
           )
         )
       end

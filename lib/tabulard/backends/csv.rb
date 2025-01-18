@@ -2,18 +2,18 @@
 
 require "csv"
 
-require_relative "../sheet"
+require_relative "../table"
 
 module Tabulard
   module Backends
     class Csv
-      include Sheet
+      include Table
 
       class InvalidCSV < Message
         CODE = "invalid_csv"
 
         def_validator do
-          sheet
+          table
           nil_code_data
         end
       end
@@ -61,7 +61,7 @@ module Tabulard
         return self if @cols_count.zero?
 
         @headers.each_with_index do |header, col_idx|
-          col = Sheet.int2col(col_idx + 1)
+          col = Table.int2col(col_idx + 1)
 
           yield Header.new(col: col, value: header)
         end
@@ -78,7 +78,7 @@ module Tabulard
         handle_malformed_csv do
           @csv.each.with_index(@first_row_name) do |raw, row|
             value = Array.new(@cols_count) do |col_idx|
-              col = Sheet.int2col(col_idx + 1)
+              col = Table.int2col(col_idx + 1)
 
               Cell.new(row: row, col: col, value: raw[col_idx])
             end

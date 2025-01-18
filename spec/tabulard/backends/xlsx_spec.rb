@@ -1,23 +1,23 @@
 # frozen_string_literal: true
 
 require "tabulard/backends/xlsx"
-require "support/shared/sheet/factories"
-require "support/shared/sheet/backend_empty"
-require "support/shared/sheet/backend_filled"
+require "support/shared/table/factories"
+require "support/shared/table/backend_empty"
+require "support/shared/table/backend_filled"
 
 RSpec.describe Tabulard::Backends::Xlsx do
-  include_context "sheet/factories"
+  include_context "table/factories"
 
   let(:input) do
     stub_input(source)
   end
 
-  let(:sheet_opts) do
+  let(:table_opts) do
     {}
   end
 
-  let(:sheet) do
-    described_class.new(input, **sheet_opts)
+  let(:table) do
+    described_class.new(input, **table_opts)
   end
 
   def stub_input(source)
@@ -25,7 +25,7 @@ RSpec.describe Tabulard::Backends::Xlsx do
   end
 
   after do |example|
-    sheet.close unless example.metadata[:autoclose_sheet] == false
+    table.close unless example.metadata[:autoclose_table] == false
   end
 
   context "when the input table is empty" do
@@ -37,7 +37,7 @@ RSpec.describe Tabulard::Backends::Xlsx do
       []
     end
 
-    include_examples "sheet/backend_empty", sized_rows_enum: true
+    include_examples "table/backend_empty", sized_rows_enum: true
   end
 
   context "when the input table is filled" do
@@ -53,7 +53,7 @@ RSpec.describe Tabulard::Backends::Xlsx do
       ]
     end
 
-    include_examples "sheet/backend_filled", sized_rows_enum: true
+    include_examples "table/backend_filled", sized_rows_enum: true
   end
 
   context "when the input table includes empty rows around the content" do
@@ -71,12 +71,12 @@ RSpec.describe Tabulard::Backends::Xlsx do
 
     it "ignores the empty initial rows when detecting the headers" do
       headers = build_headers(source_data[0])
-      expect { |b| sheet.each_header(&b) }.to yield_successive_args(*headers)
+      expect { |b| table.each_header(&b) }.to yield_successive_args(*headers)
     end
 
     it "ignores the empty final rows when detecting the rows" do
       rows = build_rows(source_data[1..], row: 3)
-      expect { |b| sheet.each_row(&b) }.to yield_successive_args(*rows)
+      expect { |b| table.each_row(&b) }.to yield_successive_args(*rows)
     end
   end
 
@@ -99,12 +99,12 @@ RSpec.describe Tabulard::Backends::Xlsx do
 
     it "ignores them when detecting the headers" do
       headers = build_headers(source_data[0])
-      expect { |b| sheet.each_header(&b) }.to yield_successive_args(*headers)
+      expect { |b| table.each_header(&b) }.to yield_successive_args(*headers)
     end
 
     it "doesn't ignore them when detecting the rows" do
       rows = build_rows(source_data[1..])
-      expect { |b| sheet.each_row(&b) }.to yield_successive_args(*rows)
+      expect { |b| table.each_row(&b) }.to yield_successive_args(*rows)
     end
   end
 
@@ -123,12 +123,12 @@ RSpec.describe Tabulard::Backends::Xlsx do
 
     it "ignores the initial empty columns when detecting the headers" do
       headers = build_headers(source_data[0], col: "B")
-      expect { |b| sheet.each_header(&b) }.to yield_successive_args(*headers)
+      expect { |b| table.each_header(&b) }.to yield_successive_args(*headers)
     end
 
     it "ignores the initial empty columns when detecting the rows" do
       rows = build_rows(source_data[1..], col: "B")
-      expect { |b| sheet.each_row(&b) }.to yield_successive_args(*rows)
+      expect { |b| table.each_row(&b) }.to yield_successive_args(*rows)
     end
   end
 end

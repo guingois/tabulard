@@ -3,7 +3,7 @@
 module Tabulard
   module Messaging
     module SCOPES
-      SHEET = "SHEET"
+      TABLE = "TABLE"
       ROW   = "ROW"
       COL   = "COL"
       CELL  = "CELL"

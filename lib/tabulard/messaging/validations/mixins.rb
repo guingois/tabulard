@@ -36,9 +36,9 @@ module Tabulard
           end
         end
 
-        module SheetValidations
+        module TableValidations
           def validate_scope(message)
-            message.scope == SCOPES::SHEET
+            message.scope == SCOPES::TABLE
           end
 
           def validate_scope_data(message)

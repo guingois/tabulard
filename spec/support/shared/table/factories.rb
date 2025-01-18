@@ -1,33 +1,33 @@
 # frozen_string_literal: true
 
-require "tabulard/sheet"
+require "tabulard/table"
 
-RSpec.shared_context "sheet/factories" do
+RSpec.shared_context "table/factories" do
   def build_header(...)
-    Tabulard::Sheet::Header.new(...)
+    Tabulard::Table::Header.new(...)
   end
 
   def build_row(...)
-    Tabulard::Sheet::Row.new(...)
+    Tabulard::Table::Row.new(...)
   end
 
   def build_cell(...)
-    Tabulard::Sheet::Cell.new(...)
+    Tabulard::Table::Cell.new(...)
   end
 
   def build_headers(values, col: "A")
-    first_col_index = Tabulard::Sheet.col2int(col)
+    first_col_index = Tabulard::Table.col2int(col)
 
     values.map.with_index(first_col_index) do |value, col_index|
-      build_header(col: Tabulard::Sheet.int2col(col_index), value: value)
+      build_header(col: Tabulard::Table.int2col(col_index), value: value)
     end
   end
 
   def build_cells(values, row:, col: "A")
-    first_col_index = Tabulard::Sheet.col2int(col)
+    first_col_index = Tabulard::Table.col2int(col)
 
     values.map.with_index(first_col_index) do |value, col_index|
-      build_cell(row: row, col: Tabulard::Sheet.int2col(col_index), value: value)
+      build_cell(row: row, col: Tabulard::Table.int2col(col_index), value: value)
     end
   end
 

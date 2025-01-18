@@ -5,22 +5,22 @@
 # - {Roo::Excelx::Cell#value} => the "user" value, after Excel's typecasts
 require "roo"
 
-require_relative "../sheet"
+require_relative "../table"
 
 module Tabulard
   module Backends
     class Xlsx
-      include Sheet
+      include Table
 
       def initialize(path, headers: nil, **opts)
         super(**opts)
 
         @roo = Roo::Excelx.new(path)
 
-        worksheet = @roo.sheet_for(@roo.default_sheet)
+        worktable = @roo.sheet_for(@roo.default_sheet)
 
-        if worksheet.first_row
-          init_with_filled_table(worksheet, headers: headers)
+        if worktable.first_row
+          init_with_filled_table(worktable, headers: headers)
         else
           init_with_empty_table(headers: headers)
         end
@@ -72,16 +72,16 @@ module Tabulard
 
       private
 
-      def init_with_filled_table(worksheet, headers:)
+      def init_with_filled_table(worktable, headers:)
         @rows = Rows.new(
-          first_row: worksheet.first_row,
-          last_row: worksheet.last_row,
+          first_row: worktable.first_row,
+          last_row: worktable.last_row,
           include_headers: headers.nil?
         )
 
         @cols = Cols.new(
-          first_col: worksheet.first_column,
-          last_col: worksheet.last_column
+          first_col: worktable.first_column,
+          last_col: worktable.last_column
         )
 
         @rows_count = @rows.count
@@ -91,7 +91,7 @@ module Tabulard
           ensure_compatible_size(@cols_count, @headers.size)
         end
 
-        @cells = worksheet.cells
+        @cells = worktable.cells
       end
 
       def init_with_empty_table(headers:)
@@ -173,7 +173,7 @@ module Tabulard
         attr_reader :count
 
         def name(col)
-          Sheet.int2col(@first_name + col)
+          Table.int2col(@first_name + col)
         end
 
         def coord(col)

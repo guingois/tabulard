@@ -14,7 +14,7 @@
 # - validation of the document's actual structure
 # - arbitrary complex typecasting of each row into a validated object,
 #   according to the document specification
-# - fine-grained error handling (at the sheet/row/col/cell level)
+# - fine-grained error handling (at the table/row/col/cell level)
 # - all of the above done so that internationalization of messages is easy
 #
 # Tabulard is designed with memory efficiency in mind by processing documents
@@ -27,5 +27,5 @@ end
 
 require "tabulard/template"
 require "tabulard/template_config"
-require "tabulard/sheet_processor"
+require "tabulard/table_processor"
 require "tabulard/backends/wrapper"
