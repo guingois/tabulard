@@ -10,7 +10,7 @@ RSpec.describe Tabulard::Messaging::Messages::MustExist do
   describe "validations" do
     let(:message) do
       described_class.new(
-        code: "must_exist",
+        code: "tabulard.must_exist",
         code_data: nil,
         scope: "CELL",
         scope_data: { col: "FOO", row: 42 }

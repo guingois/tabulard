@@ -6,7 +6,7 @@ module Tabulard
   module Messaging
     module Messages
       class CleanedString < MessageVariant
-        CODE = "cleaned_string"
+        CODE = "tabulard.cleaned_string"
 
         def_validator do
           cell
