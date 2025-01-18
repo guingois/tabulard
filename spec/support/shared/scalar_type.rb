@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require "sheetah/types/type"
+require "tabulard/types/type"
 
 RSpec.shared_examples "scalar_type" do
   let(:value) { double }
   let(:messenger) { double }
 
   it "is a type" do
-    expect(described_class.ancestors).to include(Sheetah::Types::Type)
+    expect(described_class.ancestors).to include(Tabulard::Types::Type)
   end
 
   describe "#composite?" do
@@ -19,7 +19,7 @@ RSpec.shared_examples "scalar_type" do
   describe "#composite" do
     it "fails" do
       expect { subject.composite(value, messenger) }.to raise_error(
-        Sheetah::Errors::TypeError, "A scalar type cannot act as a composite"
+        Tabulard::Errors::TypeError, "A scalar type cannot act as a composite"
       )
     end
   end
@@ -39,7 +39,7 @@ RSpec.shared_examples "scalar_type" do
         index = double
 
         expect { subject.scalar(index, value, messenger) }.to raise_error(
-          Sheetah::Errors::TypeError, "A scalar type cannot be indexed"
+          Tabulard::Errors::TypeError, "A scalar type cannot be indexed"
         )
       end
     end

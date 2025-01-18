@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require "sheetah/types/type"
-require "sheetah/types/scalars/scalar"
+require "tabulard/types/type"
+require "tabulard/types/scalars/scalar"
 
 RSpec.shared_examples "composite_type" do
   subject(:type) do
@@ -14,7 +14,7 @@ RSpec.shared_examples "composite_type" do
   let(:messenger) { double }
 
   it "is a type" do
-    expect(described_class.ancestors).to include(Sheetah::Types::Type)
+    expect(described_class.ancestors).to include(Tabulard::Types::Type)
   end
 
   describe "#composite?" do
@@ -38,7 +38,7 @@ RSpec.shared_examples "composite_type" do
     end
 
     context "when the index refers to a scalar type" do
-      let(:scalar_type) { instance_double(Sheetah::Types::Scalars::Scalar) }
+      let(:scalar_type) { instance_double(Tabulard::Types::Scalars::Scalar) }
 
       before do
         stub_scalar_index(scalar_type)
@@ -60,7 +60,7 @@ RSpec.shared_examples "composite_type" do
 
       it "raises an error" do
         expect { subject.scalar(type_index, value, messenger) }.to raise_error(
-          Sheetah::Errors::TypeError,
+          Tabulard::Errors::TypeError,
           "Invalid index: #{type_index.inspect}"
         )
       end
