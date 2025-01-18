@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "sheetah/sheet"
+require "tabulard/sheet"
 
 RSpec.shared_examples "sheet/backend_empty" do |sized_rows_enum: false|
   describe "#each_header" do
@@ -57,11 +57,11 @@ RSpec.shared_examples "sheet/backend_empty" do |sized_rows_enum: false|
     before { sheet.close }
 
     it "can't enumerate headers" do
-      expect { sheet.each_header }.to raise_error(Sheetah::Sheet::ClosureError)
+      expect { sheet.each_header }.to raise_error(Tabulard::Sheet::ClosureError)
     end
 
     it "can't enumerate rows" do
-      expect { sheet.each_row }.to raise_error(Sheetah::Sheet::ClosureError)
+      expect { sheet.each_row }.to raise_error(Tabulard::Sheet::ClosureError)
     end
   end
 

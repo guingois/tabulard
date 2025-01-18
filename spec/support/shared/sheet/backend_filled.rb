@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "sheetah/sheet"
+require "tabulard/sheet"
 
 RSpec.shared_examples "sheet/backend_filled" do |sized_rows_enum: false|
   unless instance_methods.include?(:source_data)
@@ -69,11 +69,11 @@ RSpec.shared_examples "sheet/backend_filled" do |sized_rows_enum: false|
     before { sheet.close }
 
     it "can't enumerate headers" do
-      expect { sheet.each_header }.to raise_error(Sheetah::Sheet::ClosureError)
+      expect { sheet.each_header }.to raise_error(Tabulard::Sheet::ClosureError)
     end
 
     it "can't enumerate rows" do
-      expect { sheet.each_row }.to raise_error(Sheetah::Sheet::ClosureError)
+      expect { sheet.each_row }.to raise_error(Tabulard::Sheet::ClosureError)
     end
   end
 
@@ -108,7 +108,7 @@ RSpec.shared_examples "sheet/backend_filled" do |sized_rows_enum: false|
 
       it "fails to initialize", autoclose_sheet: false do
         expect { sheet }.to raise_error(
-          Sheetah::Sheet::TooFewHeaders,
+          Tabulard::Sheet::TooFewHeaders,
           "Expected #{data_size} headers, got: #{headers_size}"
         )
       end
@@ -119,7 +119,7 @@ RSpec.shared_examples "sheet/backend_filled" do |sized_rows_enum: false|
 
       it "fails to initialize", autoclose_sheet: false do
         expect { sheet }.to raise_error(
-          Sheetah::Sheet::TooManyHeaders,
+          Tabulard::Sheet::TooManyHeaders,
           "Expected #{data_size} headers, got: #{headers_size}"
         )
       end
