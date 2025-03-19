@@ -10,7 +10,7 @@ RSpec.describe Tabulard::Messaging::Messages::MustBeDate do
   describe "validations" do
     let(:message) do
       described_class.new(
-        code: "must_be_date",
+        code: "tabulard.must_be_date",
         code_data: { format: "foo" },
         scope: "CELL",
         scope_data: { col: "FOO", row: 42 }

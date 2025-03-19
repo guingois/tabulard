@@ -10,7 +10,7 @@ RSpec.describe Tabulard::Messaging::Messages::DuplicatedHeader do
   describe "validations" do
     let(:message) do
       described_class.new(
-        code: "duplicated_header",
+        code: "tabulard.duplicated_header",
         code_data: { value: "header_foo" },
         scope: "COL",
         scope_data: { col: "FOO" }
