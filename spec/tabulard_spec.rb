@@ -63,12 +63,12 @@ RSpec.describe Tabulard, monadic_result: true do
   end
 
   def process(*args, **opts, &block)
-    processor.call(*args, adapter: Tabulard::Adapters::Wrapper, **opts, &block)
+    processor.call(*args, adapter: Tabulard::Adapters::Bare, **opts, &block)
   end
 
   def process_to_a(*args, **opts)
     a = []
-    processor.call(*args, adapter: Tabulard::Adapters::Wrapper, **opts) { |result| a << result }
+    processor.call(*args, adapter: Tabulard::Adapters::Bare, **opts) { |result| a << result }
     a
   end
 

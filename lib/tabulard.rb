@@ -28,4 +28,4 @@ end
 require "tabulard/template"
 require "tabulard/template_config"
 require "tabulard/table_processor"
-require "tabulard/adapters/wrapper"
+require "tabulard/adapters/bare"

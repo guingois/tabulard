@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require "tabulard/adapters/wrapper"
+require "tabulard/adapters/bare"
 require "support/shared/table/factories"
 require "support/shared/table/empty"
 require "support/shared/table/filled"
 
-RSpec.describe Tabulard::Adapters::Wrapper do
+RSpec.describe Tabulard::Adapters::Bare do
   include_context "table/factories"
 
   let(:table_interface) do

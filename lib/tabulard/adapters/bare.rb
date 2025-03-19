@@ -4,7 +4,7 @@ require_relative "../table"
 
 module Tabulard
   module Adapters
-    class Wrapper
+    class Bare
       include Table
 
       def initialize(table, headers: nil, **opts)
