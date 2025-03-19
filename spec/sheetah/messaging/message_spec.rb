@@ -137,10 +137,10 @@ RSpec.describe Sheetah::Messaging::Message do
     context "when there is some data associated with the code" do
       let(:scope)      { Sheetah::Messaging::SCOPES::SHEET }
       let(:scope_data) { nil }
-      let(:code_data) { { foo: "bar" } }
+      let(:code_data) { { "foo" => "bar" } }
 
       it "can be reduced to a string" do
-        expect(message.to_s).to eq("[SHEET] ERROR: foo_is_bar {:foo=>\"bar\"}")
+        expect(message.to_s).to match(/^\[SHEET\] ERROR: foo_is_bar {"foo" ?=> ?"bar"}$/)
       end
     end
   end

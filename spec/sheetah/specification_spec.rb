@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "sheetah/specification"
+require "sheetah/column"
 
 RSpec.describe Sheetah::Specification do
   describe "#get" do
