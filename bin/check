@@ -7,7 +7,7 @@ bundle exec rspec
 
 tmpdir="$(mktemp -d)"
 
-gem build --strict --output "$tmpdir/sheetah.gem" && build_exit=$? || build_exit=$?
+gem build --strict --output "$tmpdir/tabulard.gem" && build_exit=$? || build_exit=$?
 
 rm -r "$tmpdir"
 

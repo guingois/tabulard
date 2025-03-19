@@ -21,12 +21,12 @@ branch:
 Add the following to your Gemfile:
 
 ```ruby
-gem "tabulard", require: "sheetah/frozen"
+gem "tabulard", require: "tabulard/frozen"
 ```
 
 Then `bundle install`.
 
-For examples of common use cases, please have a look at `spec/sheetah_spec.rb`.
+For examples of common use cases, please have a look at `spec/tabulard_spec.rb`.
 
 ## Project status
 
@@ -35,9 +35,5 @@ development.
 
 It started as a fork of [Sheetah](https://github.com/steeple-org/sheetah),
 a library used in production at Steeple and originally authored by the
-now-maintainer of Tabulard.
-
-For now, Tabulard aims to stay mostly retrocompatible with Sheetah. That
-said, retrocompatibility is not a long-term goal of Tabulard, as its
-roadmap will eventually bring important changes that can't be compatible
-with Sheetah (such as renaming the top-level Ruby module, for example).
+now-maintainer of Tabulard. For a while, Tabulard stayed compatible with
+Sheetah, but it no longer is.
