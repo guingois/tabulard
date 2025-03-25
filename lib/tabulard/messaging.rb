@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
+require_relative "messaging/config"
+require_relative "messaging/constants"
+require_relative "messaging/message"
+require_relative "messaging/message_variant"
+require_relative "messaging/messenger"
+
 module Tabulard
   module Messaging
-    require_relative "messaging/config"
-    require_relative "messaging/constants"
-    require_relative "messaging/message"
-    require_relative "messaging/message_variant"
-    require_relative "messaging/messenger"
-
     class << self
       attr_accessor :config
 
