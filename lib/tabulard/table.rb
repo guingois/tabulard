@@ -2,8 +2,7 @@
 
 require_relative "table/col_converter"
 require_relative "errors/error"
-require_relative "messaging/messenger"
-require_relative "messaging/message_variant"
+require_relative "messaging"
 require_relative "utils/monadic_result"
 
 module Tabulard

@@ -5,6 +5,7 @@ module Tabulard
     require_relative "messaging/config"
     require_relative "messaging/constants"
     require_relative "messaging/message"
+    require_relative "messaging/message_variant"
     require_relative "messaging/messenger"
 
     class << self
