@@ -16,6 +16,13 @@ branch:
 - [Ruby API](https://tabulard.github.io/tabulard/ruby)
 - [Coverage](https://tabulard.github.io/tabulard/coverage)
 
+However, the most complete and up-to-date source of information remains
+the RSpec spec files. These are intended to specify the public behavior
+of the library's objects. They provide numerous examples and
+descriptions of how they work and how they should be used. For example,
+have a look [here](spec/tabulard_spec.rb) for a general overview of the
+library.
+
 ## Usage
 
 Add the following to your Gemfile:
