@@ -6,7 +6,7 @@ module Tabulard
   module Messaging
     module Messages
       class DuplicatedHeader < MessageVariant
-        CODE = "duplicated_header"
+        CODE = "tabulard.duplicated_header"
 
         def_validator do
           col

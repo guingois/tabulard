@@ -6,7 +6,7 @@ module Tabulard
   module Messaging
     module Messages
       class InvalidHeader < MessageVariant
-        CODE = "invalid_header"
+        CODE = "tabulard.invalid_header"
 
         def_validator do
           col

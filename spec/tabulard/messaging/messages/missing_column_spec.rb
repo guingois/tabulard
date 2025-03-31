@@ -10,7 +10,7 @@ RSpec.describe Tabulard::Messaging::Messages::MissingColumn do
   describe "validations" do
     let(:message) do
       described_class.new(
-        code: "missing_column",
+        code: "tabulard.missing_column",
         code_data: { value: "header_foo" },
         scope: "TABLE",
         scope_data: nil

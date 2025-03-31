@@ -6,7 +6,7 @@ module Tabulard
   module Messaging
     module Messages
       class MustBeEmail < MessageVariant
-        CODE = "must_be_email"
+        CODE = "tabulard.must_be_email"
 
         def_validator do
           cell
