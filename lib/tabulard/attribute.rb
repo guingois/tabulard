@@ -38,6 +38,12 @@ module Tabulard
     # @return [AttributeType]
     attr_reader :type
 
+    def ==(other)
+      other.is_a?(self.class) &&
+        key == other.key &&
+        type == other.type
+    end
+
     def each_column(config)
       return enum_for(:each_column, config) unless block_given?
 
