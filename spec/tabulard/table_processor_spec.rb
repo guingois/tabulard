@@ -38,8 +38,7 @@ RSpec.describe Tabulard::TableProcessor, monadic_result: true do
   end
 
   def stub_table_open
-    stub = receive(:open).with(*adapter_args, **adapter_opts, messenger: messenger)
-    stub = yield(stub) if block_given?
+    stub = yield receive(:open).with(*adapter_args, **adapter_opts, messenger: messenger)
     allow(table_class).to(stub)
   end
 

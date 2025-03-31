@@ -19,10 +19,6 @@ module Tabulard
       @columns.select(&:required?)
     end
 
-    def optional_columns
-      @columns.reject(&:required?)
-    end
-
     def ignore_unspecified_columns?
       @ignore_unspecified_columns
     end

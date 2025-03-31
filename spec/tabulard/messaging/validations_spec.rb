@@ -10,11 +10,7 @@ RSpec.describe Tabulard::Messaging::Validations do
       :scope,
       :scope_data,
       keyword_init: true
-    ) do
-      def self.code
-        "foo"
-      end
-    end
+    )
   end
 
   before do
