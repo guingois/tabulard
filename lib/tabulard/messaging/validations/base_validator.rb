@@ -12,14 +12,14 @@ module Tabulard
         def validate(message)
           errors = []
 
-          errors << "code"       unless validate_code(message)
-          errors << "code_data"  unless validate_code_data(message)
-          errors << "scope"      unless validate_scope(message)
-          errors << "scope_data" unless validate_scope_data(message)
+          validate_and_append_code(message, errors)
+          validate_and_append_code_data(message, errors)
+          validate_and_append_scope(message, errors)
+          validate_and_append_scope_data(message, errors)
 
           return if errors.empty?
 
-          raise InvalidMessage, "#{errors.join(", ")} <#{message.class}>#{message.to_h}"
+          raise InvalidMessage, build_exception_message(message, errors)
         end
 
         def validate_code(_message)
@@ -36,6 +36,28 @@ module Tabulard
 
         def validate_scope_data(_message)
           true
+        end
+
+        private
+
+        def validate_and_append_code(message, errors)
+          errors << "code" unless validate_code(message)
+        end
+
+        def validate_and_append_code_data(message, errors)
+          errors << "code_data" unless validate_code_data(message)
+        end
+
+        def validate_and_append_scope(message, errors)
+          errors << "scope" unless validate_scope(message)
+        end
+
+        def validate_and_append_scope_data(message, errors)
+          errors << "scope_data" unless validate_scope_data(message)
+        end
+
+        def build_exception_message(message, errors)
+          "#{errors.join(", ")} <#{message.class}>#{message.to_h}"
         end
       end
     end

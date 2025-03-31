@@ -33,10 +33,6 @@ RSpec.describe Tabulard::Adapters::Xlsx do
       "xlsx/empty.xlsx"
     end
 
-    let(:source_data) do
-      []
-    end
-
     include_examples "table/empty", sized_rows_enum: true
   end
 

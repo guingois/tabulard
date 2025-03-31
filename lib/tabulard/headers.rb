@@ -37,14 +37,14 @@ module Tabulard
     end
 
     def add(header)
-      @messenger.scope_col!(header.col) do
-        column = @specification.get(header.value)
+      column = @specification.get(header.value)
 
+      @messenger.scope_col!(header.col) do
         return unless add_ensure_column_is_specified(header, column)
         return unless add_ensure_column_is_unique(header, column)
-
-        @headers << Header.new(header, column)
       end
+
+      @headers << Header.new(header, column)
     end
 
     def result

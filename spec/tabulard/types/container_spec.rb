@@ -41,7 +41,6 @@ RSpec.describe Tabulard::Types::Container do
       end
 
       def stub_new_type(klass, *args)
-        args << no_args if args.empty?
         allow(klass).to receive(:new!).with(*args).and_return(instance = double)
         instance
       end

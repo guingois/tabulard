@@ -23,21 +23,17 @@ module Tabulard
       def int2col(int)
         raise ArgumentError unless int.is_a?(Integer) && int.positive?
 
-        x = int
-        y = CHARSET_SIZE
         col = +""
 
-        until x.zero?
-          q, r = x.divmod(y)
+        until int.zero?
+          int, char_int = int.divmod(CHARSET_SIZE)
 
-          if r.zero?
-            q -= 1
-            r = y
+          if char_int.zero?
+            int -= 1
+            char_int = CHARSET_SIZE
           end
 
-          x = q
-
-          col << int2char(r)
+          col << int2char(char_int)
         end
 
         col.reverse!
