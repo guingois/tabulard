@@ -10,7 +10,7 @@ RSpec.describe Tabulard::Messaging::Messages::CleanedString do
   describe "validations" do
     let(:message) do
       described_class.new(
-        code: "cleaned_string",
+        code: "tabulard.cleaned_string",
         code_data: nil,
         scope: "CELL",
         scope_data: { col: "FOO", row: 42 }

@@ -6,7 +6,7 @@ module Tabulard
   module Messaging
     module Messages
       class MustBeBoolsy < MessageVariant
-        CODE = "must_be_boolsy"
+        CODE = "tabulard.must_be_boolsy"
 
         def_validator do
           cell

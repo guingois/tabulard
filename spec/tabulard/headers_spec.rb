@@ -97,7 +97,7 @@ RSpec.describe Tabulard::Headers, monadic_result: true do
         expect(messenger.messages).to contain_exactly(
           be_a(Tabulard::Messaging::Message) & have_attributes(
             severity: "ERROR",
-            code: "invalid_header",
+            code: "tabulard.invalid_header",
             code_data: { value: table_headers[4].value },
             scope: "COL",
             scope_data: { col: table_headers[4].col }
@@ -121,7 +121,7 @@ RSpec.describe Tabulard::Headers, monadic_result: true do
         expect(messenger.messages).to contain_exactly(
           be_a(Tabulard::Messaging::Message) & have_attributes(
             severity: "ERROR",
-            code: "duplicated_header",
+            code: "tabulard.duplicated_header",
             code_data: { value: table_headers[1].value },
             scope: "COL",
             scope_data: { col: table_headers[1].col }

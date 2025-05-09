@@ -6,7 +6,7 @@ module Tabulard
   module Messaging
     module Messages
       class MustBeString < MessageVariant
-        CODE = "must_be_string"
+        CODE = "tabulard.must_be_string"
 
         def_validator do
           cell

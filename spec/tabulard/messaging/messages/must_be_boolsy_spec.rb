@@ -10,7 +10,7 @@ RSpec.describe Tabulard::Messaging::Messages::MustBeBoolsy do
   describe "validations" do
     let(:message) do
       described_class.new(
-        code: "must_be_boolsy",
+        code: "tabulard.must_be_boolsy",
         code_data: { value: "foo" },
         scope: "CELL",
         scope_data: { col: "FOO", row: 42 }
