@@ -25,7 +25,7 @@
 module Tabulard
 end
 
-require "tabulard/template"
-require "tabulard/template_config"
-require "tabulard/table_processor"
-require "tabulard/adapters/bare"
+require_relative "tabulard/template"
+require_relative "tabulard/template_config"
+require_relative "tabulard/table_processor"
+require_relative "tabulard/adapters/bare"

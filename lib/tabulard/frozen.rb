@@ -2,7 +2,7 @@
 
 # :nocov: #
 
-require "tabulard"
+require_relative "../tabulard"
 
 Tabulard::Types::Type.all(&:freeze)
 
