@@ -2,6 +2,9 @@
 /private/
 /tmp/
 
+# Bundler artifacts
+/.bundle/
+
 # RSpec artifacts
 /spec/examples.txt
 
