@@ -10,9 +10,6 @@ AllCops:
   TargetRubyVersion: 3.2
   NewCops: enable
   Exclude:
-    - bin/rspec
-    - bin/rubocop
-    - bin/yard
     - private/**/*
     - vendor/bundle/**/* # ruby/setup-ruby@v1 will setup gems in that directoy, so exclude it
 
