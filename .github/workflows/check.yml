@@ -36,7 +36,7 @@ jobs:
           - coverage_report_html: false
             coverage_report_cobertura: false
           - os: ubuntu-latest
-            ruby: '3.3'
+            ruby: '3.4'
             coverage_report_html: ${{ github.ref_name == 'master' }}
             coverage_report_cobertura: true
     runs-on: ${{ matrix.os }}
