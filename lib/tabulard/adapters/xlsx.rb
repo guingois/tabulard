@@ -12,8 +12,8 @@ module Tabulard
     class Xlsx
       include Table
 
-      def initialize(path, headers: nil, **opts)
-        super(**opts)
+      def initialize(path, headers: nil, **)
+        super(**)
 
         @roo = Roo::Excelx.new(path)
 

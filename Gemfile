@@ -17,9 +17,9 @@ gem "simplecov", "~> 0.22.0"
 gem "simplecov-cobertura", "~> 2.1"
 
 # A Ruby static code analyzer and formatter
-gem "rubocop", "~> 1.74"
-gem "rubocop-performance", "~> 1.24"
-gem "rubocop-rspec", "~> 3.5"
+gem "rubocop", "~> 1.75"
+gem "rubocop-performance", "~> 1.25"
+gem "rubocop-rspec", "~> 3.6"
 
 # A Ruby documentation tool
 gem "yard", "~> 0.9.37"
@@ -29,7 +29,7 @@ gem "csv", "~> 3.3"
 
 # An optional library, used to parse XLSX documents when needed
 gem "roo", "~> 2.10"
-gem "base64", "~> 0.2.0" # Dependency of Roo, missing for MRI 3.4+ # rubocop:disable Bundler/OrderedGems
+gem "base64", "~> 0.3.0" # Dependency of Roo, missing for MRI 3.4+ # rubocop:disable Bundler/OrderedGems
 
 # Manage environment variables within spec examples
 gem "climate_control", "~> 1.2"

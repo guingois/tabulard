@@ -20,8 +20,8 @@ module Tabulard
     end
 
     module ClassMethods
-      def open(*args, **opts)
-        table = new(*args, **opts)
+      def open(*, **)
+        table = new(*, **)
         return Utils::MonadicResult::Success.new(table) unless block_given?
 
         begin

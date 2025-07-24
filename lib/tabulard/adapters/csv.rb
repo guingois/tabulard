@@ -36,9 +36,9 @@ module Tabulard
         col_sep: self.class.defaults[:col_sep],
         quote_char: self.class.defaults[:quote_char],
         headers: nil,
-        **opts
+        **
       )
-        super(**opts)
+        super(**)
 
         csv = CSV.new(
           io,

@@ -7,12 +7,9 @@ plugins:
   - rubocop-rspec
 
 AllCops:
-  TargetRubyVersion: 3.1
+  TargetRubyVersion: 3.2
   NewCops: enable
   Exclude:
-    - bin/rspec
-    - bin/rubocop
-    - bin/yard
     - private/**/*
     - vendor/bundle/**/* # ruby/setup-ruby@v1 will setup gems in that directoy, so exclude it
 
@@ -37,11 +34,17 @@ Metrics/MethodLength:
 Metrics/ParameterLists:
   CountKeywordArgs: false
 
+Naming/PredicateMethod:
+  Enabled: false
+
 RSpec/ContextWording:
   Enabled: false
 
 RSpec/ExampleLength:
   Max: 15
+
+RSpec/IncludeExamples:
+  Enabled: false
 
 RSpec/IndexedLet:
   Enabled: false

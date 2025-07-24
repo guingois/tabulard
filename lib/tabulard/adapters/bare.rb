@@ -7,8 +7,8 @@ module Tabulard
     class Bare
       include Table
 
-      def initialize(table, headers: nil, **opts)
-        super(**opts)
+      def initialize(table, headers: nil, **)
+        super(**)
 
         if (table_size = table.size).positive?
           init_with_filled_table(table, table_size: table_size, headers: headers)
