@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "set"
 require_relative "messaging/messages/invalid_header"
 require_relative "messaging/messages/duplicated_header"
 require_relative "messaging/messages/missing_column"
