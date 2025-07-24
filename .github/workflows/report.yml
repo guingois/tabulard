@@ -25,7 +25,7 @@ jobs:
           path: tmp/rspec_junit
 
       - name: Create commit check
-        uses: mikepenz/action-junit-report@v4
+        uses: mikepenz/action-junit-report@v5
         with:
           commit: ${{ github.event.workflow_run.head_sha }}
           report_paths: tmp/rspec_junit/*
