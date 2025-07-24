@@ -33,8 +33,8 @@ module Tabulard
       # Contrary to the requirements of {Message#initialize}, {MessageVariant.new} doesn't require
       # the caller to pass the `:code` keyword argument, as it is capable of prodividing it
       # automatically (from reading {.code}).
-      def self.new(**opts)
-        super(code: code, **opts)
+      def self.new(**)
+        super(code: code, **)
       end
 
       def_validator do

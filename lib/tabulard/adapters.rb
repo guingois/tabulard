@@ -3,8 +3,8 @@
 module Tabulard
   module Adapters
     class << self
-      def open(*args, adapter:, **opts, &block)
-        adapter.open(*args, **opts, &block)
+      def open(*, adapter:, **, &)
+        adapter.open(*, **, &)
       end
     end
   end

@@ -7,8 +7,8 @@ module Tabulard
   module Types
     module Composites
       class Composite < Type
-        def initialize(types, **opts)
-          super(**opts)
+        def initialize(types, **)
+          super(**)
 
           @types = types
         end

@@ -6,8 +6,8 @@ module Tabulard
   module Messaging
     module Validations
       module ClassMethods
-        def def_validator(base: validator&.class || BaseValidator, &block)
-          @validator = Class.new(base, &block).new.freeze
+        def def_validator(base: validator&.class || BaseValidator, &)
+          @validator = Class.new(base, &).new.freeze
         end
 
         def validator

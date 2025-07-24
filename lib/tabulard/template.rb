@@ -26,11 +26,11 @@ module Tabulard
   # specification, and composite attributes will produce as many columns as
   # required by the number of scalar values they hold.
   class Template
-    def self.build(attributes:, **kwargs)
+    def self.build(attributes:, **)
       attributes = attributes.map { |attribute| Attribute.build(**attribute) }
       attributes.freeze
 
-      template = new(attributes: attributes, **kwargs)
+      template = new(attributes: attributes, **)
       template.freeze
     end
 
