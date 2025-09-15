@@ -10,7 +10,7 @@ RSpec.describe Tabulard::Messaging::Messages::MustBeArray do
   describe "validations" do
     let(:message) do
       described_class.new(
-        code: "must_be_array",
+        code: "tabulard.must_be_array",
         code_data: nil,
         scope: "CELL",
         scope_data: { col: "FOO", row: 42 }

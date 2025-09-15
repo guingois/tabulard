@@ -106,7 +106,7 @@ RSpec.describe Tabulard, monadic_result: true do
       expect(results[2].result).to eq(Failure())
       expect(results[2].messages).to contain_exactly(
         have_attributes(
-          code: "must_be_email",
+          code: "tabulard.must_be_email",
           code_data: { value: "boudiou !".inspect },
           scope: Tabulard::Messaging::SCOPES::CELL,
           scope_data: { row: 4, col: "B" },
@@ -151,14 +151,14 @@ RSpec.describe Tabulard, monadic_result: true do
           result: Failure(),
           messages: contain_exactly(
             have_attributes(
-              code: "invalid_header",
+              code: "tabulard.invalid_header",
               code_data: { value: "oof" },
               scope: Tabulard::Messaging::SCOPES::COL,
               scope_data: { col: "C" },
               severity: Tabulard::Messaging::SEVERITIES::ERROR
             ),
             have_attributes(
-              code: "invalid_header",
+              code: "tabulard.invalid_header",
               code_data: { value: "rab" },
               scope: Tabulard::Messaging::SCOPES::COL,
               scope_data: { col: "F" },
@@ -187,14 +187,14 @@ RSpec.describe Tabulard, monadic_result: true do
         result: Failure(),
         messages: contain_exactly(
           have_attributes(
-            code: "missing_column",
+            code: "tabulard.missing_column",
             code_data: { value: "Foo" },
             scope: Tabulard::Messaging::SCOPES::TABLE,
             scope_data: nil,
             severity: Tabulard::Messaging::SEVERITIES::ERROR
           ),
           have_attributes(
-            code: "missing_column",
+            code: "tabulard.missing_column",
             code_data: { value: "Bar 5" },
             scope: Tabulard::Messaging::SCOPES::TABLE,
             scope_data: nil,

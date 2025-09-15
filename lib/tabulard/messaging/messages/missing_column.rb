@@ -6,7 +6,7 @@ module Tabulard
   module Messaging
     module Messages
       class MissingColumn < MessageVariant
-        CODE = "missing_column"
+        CODE = "tabulard.missing_column"
 
         def_validator do
           table

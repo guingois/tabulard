@@ -6,7 +6,7 @@ module Tabulard
   module Messaging
     module Messages
       class MustExist < MessageVariant
-        CODE = "must_exist"
+        CODE = "tabulard.must_exist"
 
         def_validator do
           cell

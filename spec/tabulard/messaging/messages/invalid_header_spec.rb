@@ -10,7 +10,7 @@ RSpec.describe Tabulard::Messaging::Messages::InvalidHeader do
   describe "validations" do
     let(:message) do
       described_class.new(
-        code: "invalid_header",
+        code: "tabulard.invalid_header",
         code_data: { value: "header_foo" },
         scope: "COL",
         scope_data: { col: "FOO" }
